@@ -1,0 +1,26 @@
+<h1>Settings</h1>
+<div class="import-form">
+  <form
+    action="/settings/library/create"
+    method="POST"
+  >
+
+    <p>
+
+      <label for="mySongs">
+        <input type="checkbox" id="mySongs" name="mySongs" checked />
+        my liked songs</label>
+    </p>
+    <p>
+      <label for="myPlaylists">
+        <input type="checkbox" id="myPlaylists" name="myPlaylists" />
+        playlists I created</label>
+    </p>
+    <p>
+      <label for="spotifyPlaylists">
+        <input type="checkbox" id="spotifyPlaylists" name="spotifyPlaylists" />
+        playlists created by other</label>
+    </p>
+		   <button type="submit">Import</button>
+  </form>
+</div>
