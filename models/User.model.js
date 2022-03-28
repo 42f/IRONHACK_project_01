@@ -11,7 +11,7 @@ const userSchema = new Schema(
   {
     email: {type: String, unique:true, required:true},
     userName: {type: String, unique:true, required:true},
-    avatarUrl: {type: String, default: avatarGen(this.userName)},
+    avatarUrl: String,
     password: String,
   },
   {
