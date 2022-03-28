@@ -1,0 +1,14 @@
+<h1>{{appTitle}} 🚀</h1>
+<h2>{{formTitle}}</h2>
+<form action="{{formAction}}" method="post">
+	{{> formTextField definedValue=definedValues.description
+	value="comment" name="Comment" required=true }}
+
+	<input type='submit' placeholder="0" value='{{formButton}}' />
+</form>
+
+
+{{#if error}}
+	<p>{{error}}</p>
+{{/if}}
+

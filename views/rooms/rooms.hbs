@@ -1,0 +1,48 @@
+<h1>{{appTitle}} 🚀</h1>
+<h2>{{roomListTitle}}</h2>
+
+<div class="roomsList">
+
+{{#if rooms.length}}
+	{{#each rooms}}
+		<div class="roomCard">
+			 <div class="roomImage">
+          {{#if imageUrl}}
+            <img src="{{imageUrl}}" alt="{{name}}" />
+          {{/if}}
+        </div>
+				<h3>Name: {{name}}</h3>
+				<p>Description: {{description}}</p>
+				<p>Owned by: {{owner.fullName}}</p>
+				<p>Currently {{reviews.length}} reviews</p>
+				<ul>
+					{{#each reviews}}
+						<li>
+							<p>From: {{user.fullName}}</p>
+							<p>{{comment}}</p>
+						</li>
+					{{/each}}
+				</ul>
+				{{#if ../userId}}
+				{{#unless (isUserTheOwner ../userId owner)}}
+				<button>
+					<a href="/reviews/{{id}}/create">add your review on {{name}}</a>
+				</button>
+				{{/unless}}
+				{{/if}}
+		</div>
+	{{/each}}
+
+{{else}}
+	<p>{{noRoomMessage}}</p>
+{{/if}}
+
+</div>
+
+{{#if addRoomButton}}
+	<footer>
+		<button>
+			<a href="/rooms/create">Add a room</a>
+		</button>
+	</footer>
+{{/if}}

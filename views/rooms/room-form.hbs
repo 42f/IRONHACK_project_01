@@ -1,0 +1,22 @@
+<h1>{{appTitle}} 🚀</h1>
+<h2>{{formTitle}}</h2>
+
+<form action="{{formAction}}" method="post">
+
+	{{> formTextField definedValue=definedValues.name
+	value="name" name="Name" required=true }}
+
+	{{> formTextField definedValue=definedValues.description
+	value="description" name="Description" required=true }}
+
+	{{> formTextField definedValue=definedValues.imageUrl
+	value="imageUrl" name="Url to a photo" }}
+
+	<input type='submit' placeholder="0" value='{{formButton}}' />
+</form>
+
+
+{{#if error}}
+	<p>{{error}}</p>
+{{/if}}
+
