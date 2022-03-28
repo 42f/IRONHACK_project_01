@@ -82,6 +82,9 @@ app.use("/rooms", roomsRoutes);
 const reviewsRoutes = require("./routes/reviews.routes");
 app.use("/reviews", reviewsRoutes);
 
+const settingsRoutes = require("./routes/settings.routes");
+app.use("/settings", settingsRoutes);
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
