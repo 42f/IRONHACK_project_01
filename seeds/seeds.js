@@ -3,6 +3,7 @@ const { faker } = require("@faker-js/faker");
 const User = require("../models/User.model");
 const Track = require("../models/Track.model");
 const Link = require("../models/Link.model");
+const Group = require("../models/Group.model");
 
 const {MONGO_URI} = require('../utils/consts');
 
@@ -36,9 +37,9 @@ const starterUsers = [
 ];
 
 // Create fake users
-function generateFakeUsers() {
+function generateFakeUsers(quantity) {
   const users = starterUsers;
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < quantity; i++) {
     const userNameValue = faker.internet.userName();
     console.log(userNameValue);
     let user = {
@@ -101,9 +102,9 @@ const staterTracks = [
 ];
 
 // Create fake track
-function generateFakeTracks() {
+function generateFakeTracks(quantity) {
   const tracks = staterTracks;
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < quantity; i++) {
     let track = {
       isrc: faker.datatype.number(),
       title: faker.lorem.words(),
@@ -136,49 +137,37 @@ async function fakeLinks(usersDB, tracksDB) {
   await Link.create(links);
 }
 
-// generate one group
-/*
+// Generate groups
 
-  generate (userdb) {
-
-    declar an object for group { ower, participant = []}
-    group.owner = userdb.splice(randomIndex, 1);
-
-    randomLen between 2 and 5
-      for (random len) {
-        group.participant.push( one random user from userDB (with splice) );
-      }
-
-      return group;
-  }
-*/
 function generateOneGroup(usersDB) {
-  const usersArr = [...usersDB];
-  let group = {
+
+  const randomIndex = Math.floor(Math.random() * usersDB.length);
+  const group = {
     name: faker.lorem.words(),
-    owner,
-    participants,
+    owner: usersDB.splice(randomIndex, 1)[0],
+    participants: [],
   };
+  
+  let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
+  randomLen = randomLen > 5 ? 5 : randomLen;
+  for(let i = 0; i < randomLen; i++) {
+    const randomIndex = Math.floor(Math.random() * usersDB.length);
+    const newParticipant = usersDB.splice(randomIndex, 1)[0];
+    group.participants.push(newParticipant);
+  }
+
+  return group;
 }
 
-/* generateAllGroups() {
-
-    groups = [];
-
-    for(10) {
-      groups.push(generateOneGroup([...userDb]));
-    }
-
-    return groups;
-
+function generateAllGroups(quantity, userDb) {
+  const groups = [];
+  for(let i = 0; i < quantity; i++) {
+    const newGroup = generateOneGroup([...userDb]);
+    groups.push(newGroup);
   }
+  return groups;
+}
 
-
-
-
-*/
-
-// Generate groups
 
 // The script that will be run to actually seed the database (feel free to refer to the previous lesson)
 async function seedDB() {
@@ -187,16 +176,17 @@ async function seedDB() {
     await Track.deleteMany();
     await Link.deleteMany();
     // Populate track array with random tracks
-    const tracks = generateFakeTracks();
+    const tracks = generateFakeTracks(50);
     // Populate users array with random users
-    const users = generateFakeUsers();
+    const users = generateFakeUsers(20);
 
     const usersDB = await User.create(users);
     const tracksDB = await Track.create(tracks);
     // Populate links array and save it to db
     await fakeLinks(usersDB, tracksDB);
-
-    //await generateGroup(usersDB);
+    const groups = generateAllGroups(10, usersDB);
+    await Group.create(groups);
+    
   } catch (err) {
     console.log(`An error occurred while creating users from the DB: ${err}`);
   }
