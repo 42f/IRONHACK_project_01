@@ -1,16 +1,18 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
 
+
+function avatarGen(username){
+  return `https://avatars.dicebear.com/api/adventurer/${username}.svg`
+}
+
 // TODO: Please make sure you edit the user model to whatever makes sense in this case
 const userSchema = new Schema(
   {
-    email: String,
+    email: {type: String, unique:true, required:true},
+    userName: {type: String, unique:true, required:true},
+    avatarUrl: String,
     password: String,
-    fullName: String,
-    // slack login - optional
-    slackID: String,
-    // google login - optional
-    googleID: String
   },
   {
     timestamps: true
