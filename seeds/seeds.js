@@ -3,9 +3,9 @@ const { faker } = require("@faker-js/faker");
 const User = require("../models/User.model");
 const Track = require("../models/Track.model");
 const Link = require("../models/Link.model");
+const Group = require("../models/Group.model");
 
-const MONGO_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/Projet-2_Spotify";
+const {MONGO_URI} = require('../utils/consts');
 
 mongoose
   .connect(MONGO_URI)
@@ -21,11 +21,25 @@ mongoose
   });
 
 // Users to insert in  DB
-const users = [];
+const starterUsers = [
+  {
+    email: "valette.brian@gmail.com",
+    userName: 'brian',
+    avatarUrl: `https://avatars.dicebear.com/api/adventurer/brian.svg`,
+    password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
+  },
+  {
+    email: "gary.j@live.fr",
+    userName: 'gary',
+    avatarUrl: `https://avatars.dicebear.com/api/adventurer/gary.svg`,
+    password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
+  },
+];
 
 // Create fake users
-function generateFakeUsers() {
-  for (let i = 0; i < 50; i++) {
+function generateFakeUsers(quantity) {
+  const users = starterUsers;
+  for (let i = 0; i < quantity; i++) {
     const userNameValue = faker.internet.userName();
     console.log(userNameValue);
     let user = {
@@ -36,10 +50,11 @@ function generateFakeUsers() {
     };
     users.push(user);
   }
+  return users;
 }
 
 // Tracks to insert in Db
-const tracks = [
+const staterTracks = [
   {
     isrc: "FR9W11935958",
     title: "Maravilla (Instrumental)",
@@ -87,8 +102,9 @@ const tracks = [
 ];
 
 // Create fake track
-function generateFakeTracks() {
-  for (let i = 0; i < 30; i++) {
+function generateFakeTracks(quantity) {
+  const tracks = staterTracks;
+  for (let i = 0; i < quantity; i++) {
     let track = {
       isrc: faker.datatype.number(),
       title: faker.lorem.words(),
@@ -103,9 +119,9 @@ function generateFakeTracks() {
     for (let j = 0; j < 3; j++) {
       track.genre.push(faker.music.genre());
     }
-
     tracks.push(track);
   }
+  return tracks;
 }
 
 // Genereta fake links
@@ -121,6 +137,38 @@ async function fakeLinks(usersDB, tracksDB) {
   await Link.create(links);
 }
 
+// Generate groups
+
+function generateOneGroup(usersDB) {
+
+  const randomIndex = Math.floor(Math.random() * usersDB.length);
+  const group = {
+    name: faker.lorem.words(),
+    owner: usersDB.splice(randomIndex, 1)[0],
+    participants: [],
+  };
+  
+  let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
+  randomLen = randomLen > 5 ? 5 : randomLen;
+  for(let i = 0; i < randomLen; i++) {
+    const randomIndex = Math.floor(Math.random() * usersDB.length);
+    const newParticipant = usersDB.splice(randomIndex, 1)[0];
+    group.participants.push(newParticipant);
+  }
+
+  return group;
+}
+
+function generateAllGroups(quantity, userDb) {
+  const groups = [];
+  for(let i = 0; i < quantity; i++) {
+    const newGroup = generateOneGroup([...userDb]);
+    groups.push(newGroup);
+  }
+  return groups;
+}
+
+
 // The script that will be run to actually seed the database (feel free to refer to the previous lesson)
 async function seedDB() {
   try {
@@ -128,15 +176,17 @@ async function seedDB() {
     await Track.deleteMany();
     await Link.deleteMany();
     // Populate track array with random tracks
-    generateFakeTracks();
+    const tracks = generateFakeTracks(50);
     // Populate users array with random users
-    generateFakeUsers();
+    const users = generateFakeUsers(20);
 
     const usersDB = await User.create(users);
     const tracksDB = await Track.create(tracks);
     // Populate links array and save it to db
     await fakeLinks(usersDB, tracksDB);
-
+    const groups = generateAllGroups(10, usersDB);
+    await Group.create(groups);
+    
   } catch (err) {
     console.log(`An error occurred while creating users from the DB: ${err}`);
   }
