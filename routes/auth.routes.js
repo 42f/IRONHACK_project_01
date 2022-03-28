@@ -24,7 +24,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
 
   if (!email || !userName) {
     return res.status(400).render("auth/signup", {
-      errorMessage: "Please provide your email and full name.",
+      errorMessage: "Please provide your email and username.",
     });
   }
 
@@ -47,7 +47,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
   */
 
   // Search the database for a user with the email submitted in the form
-  User.findOne({ email }).then((found) => {
+  User.findOne().or([{ email }, { userName }]).then((found) => {
     // If the user is found, send the message email is taken
     if (found) {
       return res
