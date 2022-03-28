@@ -1,4 +1,4 @@
-const Rooms = require("../models/Room.model");
+const links = require("../models/link.model");
 
 const hasRequiredFields = (arrayOfFields) => {
   return (req, res, next) => {
