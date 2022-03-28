@@ -76,12 +76,6 @@ app.use("/", index);
 const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
-const roomsRoutes = require("./routes/rooms.routes");
-app.use("/rooms", roomsRoutes);
-
-const reviewsRoutes = require("./routes/reviews.routes");
-app.use("/reviews", reviewsRoutes);
-
 const settingsRoutes = require("./routes/settings.routes");
 app.use("/settings", settingsRoutes);
 

@@ -1,4 +1,19 @@
 <h1>Settings</h1>
 <div class="library">
 	<p>My library here</p>
+
+	<ul>
+		{{#each tracklist.tracks}}
+			<li>
+				{{_id}}
+				{{artist}}
+				{{title}}
+				{{length}}
+				{{#each genr}}
+					{{this}}
+				{{/each}}
+			</li>
+		{{/each}}
+	</ul>
+
 </div>

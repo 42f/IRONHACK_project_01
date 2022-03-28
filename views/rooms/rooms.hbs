@@ -13,12 +13,12 @@
         </div>
 				<h3>Name: {{name}}</h3>
 				<p>Description: {{description}}</p>
-				<p>Owned by: {{owner.fullName}}</p>
+				<p>Owned by: {{owner.userName}}</p>
 				<p>Currently {{reviews.length}} reviews</p>
 				<ul>
 					{{#each reviews}}
 						<li>
-							<p>From: {{user.fullName}}</p>
+							<p>From: {{user.userName}}</p>
 							<p>{{comment}}</p>
 						</li>
 					{{/each}}
