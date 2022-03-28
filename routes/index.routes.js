@@ -7,9 +7,9 @@ const router = require("express").Router();
 router.get("/", isLoggedIn, async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
-    res.render("index", { userName: user.fullName });
+    res.render("index", { userName: user.userName });
   } catch (error) {
-    res.render("index", { userName: 'Ironhacker!'});
+    res.render("index", { userName: "Ironhacker!" });
   }
 });
 
