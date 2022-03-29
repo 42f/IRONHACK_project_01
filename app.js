@@ -15,6 +15,7 @@ const path = require('path');
 const hbs = require("hbs");
 hbs.registerPartials(path.join(__dirname, 'views/partials'));
 hbs.registerHelper('isUserTheOwner', (userId, roomOwner) => userId === roomOwner._id.toString());
+
 const app = express();
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
