@@ -95,17 +95,28 @@ router.get("/login", isLoggedOut, (req, res) => {
   res.render("auth/login");
 });
 
-router.post('/login',
-  passport.authenticate('local', {
-    failWithError: true,
-    failureRedirect: '/auth/login',
-    failureMessage: true
-  }),
-  (req, res) => {
-    req.session.userId = req.user._id;
-    res.redirect('/');
-  }
-);
+router.post('/login', (req, res, next) => {
+  passport.authenticate(
+    'local',
+    {
+      failWithError: true,
+      failureRedirect: '/auth/login',
+      failureMessage: true
+    },
+    (err, user, detals) => {
+      if (user) {
+        req.login(user, (err) => {
+          next(err);
+        });
+        console.log(req.session);
+        req.session.userId = req.user._id;
+        res.redirect('/');
+      } else {
+        console.log('ERROR', user, detals, err)
+        res.render('auth/login', {errorMessage: 'invalid credential'})
+      }
+    })(req, res, next)
+  });
 
 router.get("/logout", isLoggedIn, (req, res) => {
   req.session.destroy((err) => {
