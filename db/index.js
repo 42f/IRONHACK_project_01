@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 // If no env has been set, we dynamically set it to whatever the folder name was upon the creation of the app
 
 const {MONGO_URI} = require("../utils/consts");
-console.log('ICI', MONGO_URI);
 
 mongoose
   .connect(MONGO_URI)

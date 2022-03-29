@@ -1,19 +1,24 @@
 <h1>Settings</h1>
 <div class="library">
-	<p>My library here</p>
+  <p>My library here</p>
 
-	<ul>
-		{{#each tracklist.tracks}}
-			<li>
-				{{_id}}
-				{{artist}}
-				{{title}}
-				{{length}}
-				{{#each genr}}
-					{{this}}
-				{{/each}}
-			</li>
-		{{/each}}
-	</ul>
+  {{#if tracklist.length}}
+    <ul>
+      {{#each tracklist.trackId}}
+        <li>
+          {{_id}}
+          {{artist}}
+          {{title}}
+          {{length}}
+          {{#each genr}}
+            {{this}}
+          {{/each}}
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No tracks in library yet, try
+      <a href="/settings/import">importing some...</a></p>
+  {{/if}}
 
 </div>

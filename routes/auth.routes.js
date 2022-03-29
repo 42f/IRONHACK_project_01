@@ -24,7 +24,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
 
   if (!email || !userName) {
     return res.status(400).render("auth/signup", {
-      errorMessage: "Please provide your email and full name.",
+      errorMessage: "Please provide your email and username.",
     });
   }
 
@@ -47,12 +47,12 @@ router.post("/signup", isLoggedOut, (req, res) => {
   */
 
   // Search the database for a user with the email submitted in the form
-  User.findOne({ email }).then((found) => {
+  User.findOne().or([{ email }, { userName }]).then((found) => {
     // If the user is found, send the message email is taken
     if (found) {
       return res
         .status(400)
-        .render("auth.signup", { errorMessage: "Email already taken." });
+        .render("auth/signup", { errorMessage: "Email already taken." });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -95,17 +95,28 @@ router.get("/login", isLoggedOut, (req, res) => {
   res.render("auth/login");
 });
 
-router.post('/login',
-  passport.authenticate('local', {
-    failWithError: true,
-    failureRedirect: '/auth/login',
-    failureMessage: true
-  }),
-  (req, res) => {
-    req.session.userId = req.user._id;
-    res.redirect('/');
-  }
-);
+router.post('/login', (req, res, next) => {
+  passport.authenticate(
+    'local',
+    {
+      failWithError: true,
+      failureRedirect: '/auth/login',
+      failureMessage: true
+    },
+    (err, user, detals) => {
+      if (user) {
+        req.login(user, (err) => {
+          next(err);
+        });
+        console.log(req.session);
+        req.session.userId = req.user._id;
+        res.redirect('/');
+      } else {
+        console.log('ERROR', user, detals, err)
+        res.render('auth/login', {errorMessage: 'invalid credential'})
+      }
+    })(req, res, next)
+  });
 
 router.get("/logout", isLoggedIn, (req, res) => {
   req.session.destroy((err) => {

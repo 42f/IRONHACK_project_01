@@ -19,17 +19,30 @@ const userSchema = new Schema(
   }
 );
 
+/*
+userSchema.methods.getLibrary; ->
+  Link.find( userId = this._id).populate(tracks)
+  retourne traks[]
+
+
+
+userSchema.methods.getCommonTracks(userB)
+  userB libraray = userB.getLibrary
+  userA library = this.getLibrary
+
+  // assembler userB Library and user A library, keep only the tracks
+  which are present more than once
+
+
+
+*/
+
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  // try {
     const match = await bcrypt.compare(candidatePassword, this.password);
     if (match) {
       return true;
     }
     throw new Error('Invalid Password')
-  // } catch (error) {
-  //   console.error(error);
-  //   return false;
-  // }
 };
 
 const User = model("User", userSchema);
