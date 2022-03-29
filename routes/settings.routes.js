@@ -1,9 +1,10 @@
 const { redirectSpotifyLogin } = require('../api/spotify-calls');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
+const Track = require('../models/Track.model')
 const Link = require('../models/Link.model')
 
-router.get("/", (req, res, next) => {
+router.get("/", isLoggedIn, (req, res, next) => {
   res.render("settings/settings");
 });
 
@@ -13,8 +14,8 @@ router.get("/import", isLoggedIn, (req, res, next) => {
 
 router.get("/library", isLoggedIn, async (req, res, next) => {
   try {
-    const tracklist = await Link.find({ userId: req.userId }).populate('trackId');
-    res.render("settings/library", tracklist);
+    const tracklist = await req.user.getLinks();
+    res.render("settings/library", {tracklist});
   } catch (error) {
     console.log(error);
     next(error);

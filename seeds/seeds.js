@@ -41,7 +41,6 @@ function generateFakeUsers(quantity) {
   const users = starterUsers;
   for (let i = 0; i < quantity; i++) {
     const userNameValue = faker.internet.userName();
-    console.log(userNameValue);
     let user = {
       email: faker.internet.email(),
       userName: userNameValue,
@@ -106,7 +105,7 @@ function generateFakeTracks(quantity) {
   const tracks = staterTracks;
   for (let i = 0; i < quantity; i++) {
     let track = {
-      isrc: faker.datatype.number(),
+      isrc: faker.datatype.number() + '_' + faker.lorem.word(),
       title: faker.lorem.words(),
       artist: faker.name.firstName(),
       length: "3:00",
@@ -125,9 +124,9 @@ function generateFakeTracks(quantity) {
 }
 
 // Genereta fake links
-async function fakeLinks(usersDB, tracksDB) {
+async function fakeLinks(quantity, usersDB, tracksDB) {
   const links = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < quantity; i++) {
     let aLink = {
       trackId: tracksDB[Math.floor(Math.random() * tracksDB.length)]._id,
       userId: usersDB[Math.floor(Math.random() * usersDB.length)]._id,
@@ -147,7 +146,7 @@ function generateOneGroup(usersDB) {
     owner: usersDB.splice(randomIndex, 1)[0],
     participants: [],
   };
-  
+
   let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
   randomLen = randomLen > 5 ? 5 : randomLen;
   for(let i = 0; i < randomLen; i++) {
@@ -176,17 +175,17 @@ async function seedDB() {
     await Track.deleteMany();
     await Link.deleteMany();
     // Populate track array with random tracks
-    const tracks = generateFakeTracks(50);
+    const tracks = generateFakeTracks(2000);
     // Populate users array with random users
     const users = generateFakeUsers(20);
 
     const usersDB = await User.create(users);
     const tracksDB = await Track.create(tracks);
     // Populate links array and save it to db
-    await fakeLinks(usersDB, tracksDB);
+    await fakeLinks(700, usersDB, tracksDB);
     const groups = generateAllGroups(10, usersDB);
     await Group.create(groups);
-    
+
   } catch (err) {
     console.log(`An error occurred while creating users from the DB: ${err}`);
   }
