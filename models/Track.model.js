@@ -12,6 +12,6 @@ const trackSchema = new Schema({
   }
 });
 
-const track = model("track", trackSchema);
+const Track = model("Track", trackSchema);
 
-module.exports = track;
+module.exports = Track;

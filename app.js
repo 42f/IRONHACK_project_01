@@ -26,6 +26,8 @@ const projectName = "rooms-app";
 const User = require("./models/User.model");
 app.locals.appTitle = `${capitalized(projectName)} created with IronLauncher`;
 
+// Middlewares
+const isLoggedIn = require('./middleware/isLoggedIn');
 
 // PASSPORT SETTINGS
 const passport = require('passport');
@@ -80,7 +82,12 @@ app.use("/auth", authRoutes);
 const settingsRoutes = require("./routes/settings.routes");
 app.use("/settings", settingsRoutes);
 
+const groups = require('./routes/groups.routes')
+app.use('/groups', isLoggedIn, groups)
+
+
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
 module.exports = app;
+
