@@ -1,18 +1,19 @@
 <h1>Settings</h1>
 <div class="library">
-  <p>My library here</p>
-
   {{#if tracklist.length}}
     <ul>
-      {{#each tracklist.trackId}}
+      {{#each tracklist}}
         <li>
-          {{_id}}
-          {{artist}}
-          {{title}}
-          {{length}}
-          {{#each genr}}
+          {{trackId.artist}} |
+          {{trackId.title}} |
+          {{trackId.length}}
+          [
+          {{#each trackId.genre}}
             {{this}}
-          {{/each}}
+          {{/each}}]
+      <button>
+        remove
+      </button>
         </li>
       {{/each}}
     </ul>
