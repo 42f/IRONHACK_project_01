@@ -23,9 +23,17 @@
           <tr>
             <td>
               {{#if trackId.img}}
-                <img class="library-artwork" src="{{trackId.img}}" alt="{{trackId.album}}">
+                <img
+                  class="library-artwork"
+                  src="{{trackId.img}}"
+                  alt="{{trackId.album}}"
+                />
               {{else}}
-                <img class="library-artwork" src="../images/default-artwork.png" alt="default artwork" />
+                <img
+                  class="library-artwork"
+                  src="../images/default-artwork.png"
+                  alt="default artwork"
+                />
               {{/if}}
             </td>
             <td>{{trackId.artist}}</td>
@@ -34,7 +42,10 @@
             <td>{{trackId.album}}</td>
             <td>{{trackId.year}}</td>
             <td></td>
-            <td><button class="trash-button"><img src="../images/trash.png" alt="remove"></button></td>
+            <td><button class="trash-button"><img
+                  src="../images/trash.png"
+                  alt="remove"
+                /></button></td>
           </tr>
         {{/each}}
       </tbody>

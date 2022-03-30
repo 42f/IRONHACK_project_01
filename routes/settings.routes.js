@@ -15,7 +15,7 @@ router.get("/import", isLoggedIn, (req, res, next) => {
 
 router.get("/library", isLoggedIn, async (req, res, next) => {
   try {
-    const tracklist = await req.user.getLinks();
+    const tracklist = await req.user?.getLinks();
     res.render("settings/library", { tracklist });
   } catch (error) {
     console.log(error);
@@ -24,17 +24,22 @@ router.get("/library", isLoggedIn, async (req, res, next) => {
 });
 
 router.post("/library/create", isLoggedIn, (req, res, next) => {
-  const { mySongs, myPlaylists, spotifyPlaylist } = req.body;
-  if (mySongs != 'on' && myPlaylists != 'on' && spotifyPlaylist != 'on') {
+  let { mySongs, myPlaylists, spotifyPlaylists } = req.body;
+  mySongs = mySongs === 'on';
+  myPlaylists = myPlaylists === 'on';
+  spotifyPlaylists = spotifyPlaylists === 'on';
+
+  if (mySongs && myPlaylists && spotifyPlaylist) {
     res.redirect('/settings/import')
   } else {
-    req.session.userFormData = { mySongs, myPlaylists, spotifyPlaylist };
+    req.session.userFormData = { mySongs, myPlaylists, spotifyPlaylists };
     next();
   }
 }, redirectSpotifyLogin);
 
 router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
+  const currentUser = req.user;
   const userCode = req.query.code;
   const receivedstate = req.query.state;
   const storedState = req.session.state;
@@ -47,7 +52,7 @@ router.get("/library/callback", isLoggedIn, async (req, res, next) => {
   delete req.session.state;
 
   try {
-    const authToken = await getSpotifyToken(userCode);
+    const authToken = await getSpotifyToken(currentUser, userCode);
     await importFromSpotify(req.user, req.session.userFormData, authToken)
     res.redirect('/settings/library')
   } catch (error) {
