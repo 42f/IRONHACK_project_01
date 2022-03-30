@@ -88,50 +88,63 @@ async function insertLinks(currentUser, trackIds) {
 	}
 }
 
-async function insertTracks(likedTracks) {
-	let insertedTracksIds;
+async function getExistingTracks(candidateTracks) {
 	try {
+		const start = Date.now()
 		const existingTracks = await Track.find();
-		likedTracks.forEach(item => {
-			const existingTrack = existingTracks.some(track => track.isrc === item.isrc);
+		candidateTracks.forEach(item => {
+			const existingTrack = existingTracks.find(track => track.isrc === item.isrc);
 			if (existingTrack) {
 				item._id = existingTrack._id
 			}
 		})
-		const alreadyInsertedTracks = likedTracks.filter(track => track._id);
-		const newTracksToInsert = likedTracks.filter(track => !track._id);
+		const alreadyInsertedTracks = candidateTracks.filter(track => track._id);
+		const newTracksToInsert = candidateTracks.filter(track => !track._id);
+		return { alreadyInsertedTracks, newTracksToInsert };
+	} catch (error) {
+		console.error(error);
+		return [];
+	}
+}
+
+async function insertTracks(candidateTracks) {
+	let tracksInDbIds = [];
+	try {
+		const { alreadyInsertedTracks, newTracksToInsert } = await getExistingTracks(candidateTracks);
 
 		const insertedTracks = await Track.insertMany(newTracksToInsert, { ordered: false });
-		insertedTracksIds = [
+
+		tracksInDbIds = [
 			...insertedTracks.map(track => track._id),
 			...alreadyInsertedTracks.map(track => track._id)
 		]
+
+		return tracksInDbIds;
 	} catch (error) {
 		console.error('ERROR CODE -> ', error.code)
 		if (error.code === 11000) {
 			console.error('--------DUPLICATED ERROR ', JSON.stringify(error, null, 4));
-			insertedTracksIds = [];
+			tracksInDbIds = [];
 		} else {
 			console.error('ERROR -> ', error)
 			throw new Error(error);
 		}
 	}
-	return insertedTracksIds;
 }
 
 function transformSpotifySongsInTracks(spotifySongs) {
 	return spotifySongs.map(item => {
 		return {
-			isrc: item.external_ids.isrc,
-			title: item.name,
-			artist: item.artists.map(artist => artist.name),
-			album: item.album.name,
-			album_id: item.album.id,
-			duration: convertMsToString(item.duration_ms),
-			year: item.album.release_date.split('-')[0],
-			img: item.album.images[0]?.url,
+			isrc: item?.isrc || item?.external_ids?.isrc ,
+			title: item?.title || item?.name,
+			artist: item?.artists?.map(artist => artist?.name) || item?.artist,
+			album: item?.album?.name || item?.album,
+			album_id: item?.album_id || item?.album?.id || '',
+			duration: item?.duration_ms ? convertMsToString(item?.duration_ms) : item?.duration,
+			year: item?.year || item?.album?.release_date?.split('-')[0],
+			img: item?.img || item?.album?.images[0]?.url,
 			importId: {
-				spotifyId: item.id,
+				spotifyId: item?.importId?.spotifyId || item?.id,
 			}
 		}
 	});
@@ -163,6 +176,8 @@ async function fetchSongsFromSpotify(url, authToken) {
 			console.error(err);
 			return [];
 		}
+	} else {
+		console.error('Missing arguments');
 	}
 }
 
@@ -178,18 +193,19 @@ async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 		do {
 			const fetchedPlaylists = await fetchEndpoint(authToken, url);
 			url = fetchedPlaylists.next;
-			let playlists;
 
+			let playlists;
 			if (userFormData.myPlaylists && userFormData.spotifyPlaylists) {
 				playlists = fetchedPlaylists?.items
+					.filter( item => item.tracks.total > 0 )
 					.map(item => item.tracks.href);
 			} else if (userFormData.myPlaylists) {
 				playlists = fetchedPlaylists?.items
-					.filter(item => isOwned(spotifyUserId, item))
+					.filter(item => isOwned(spotifyUserId, item) && item.tracks.total > 0)
 					.map(item => item.tracks.href);
 			} else {
 				playlists = fetchedPlaylists?.items
-					.filter(item => !isOwned(spotifyUserId, item))
+					.filter(item => !isOwned(spotifyUserId, item) && item.tracks.total > 0)
 					.map(item => item.tracks.href);
 			}
 			allPlaylistsUrl = [...allPlaylistsUrl, ...playlists];
@@ -206,9 +222,10 @@ async function importPlaylistSongs(spotifyUserId, userFormData, authToken) {
 		const allPlaylistsUrl = await getAllPlaylistUrls(spotifyUserId, userFormData, authToken);
 		let allPlaylistsTracks = [];
 		for (let i = 0; i < allPlaylistsUrl.length; i++) {
-			console.log('FETCHING PLAYLIST ', i + 1, ' OF ', allPlaylistsUrl.length, ' -> ', allPlaylistsUrl[i]);
 			const currentPlaylistTracks = await fetchSongsFromSpotify(allPlaylistsUrl[i], authToken);
-			allPlaylistsTracks = [...allPlaylistsTracks, ...currentPlaylistTracks];
+			if (currentPlaylistTracks.length) {
+				allPlaylistsTracks = [...allPlaylistsTracks, ...currentPlaylistTracks];
+			}
 		}
 		return transformSpotifySongsInTracks(allPlaylistsTracks);
 	} catch (error) {
@@ -218,7 +235,6 @@ async function importPlaylistSongs(spotifyUserId, userFormData, authToken) {
 }
 
 async function importFromSpotify(currentUser, userFormData, authToken) {
-	console.log(userFormData);
 	try {
 		let tracksObjectToAdd = [];
 		if (userFormData.mySongs) {
@@ -231,11 +247,10 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 			tracksObjectToAdd = [...tracksObjectToAdd, ...playlistsTracks];
 		}
 
-		console.log('Adding to db: ', tracksObjectToAdd.length);
 
-		const likedTracksIdAfterInsert = await insertTracks(tracksObjectToAdd);
-		if (likedTracksIdAfterInsert?.length) {
-			await insertLinks(currentUser, likedTracksIdAfterInsert);
+		const tracksAfterInsert = await insertTracks(tracksObjectToAdd);
+		if (tracksAfterInsert.length) {
+			await insertLinks(currentUser, tracksAfterInsert);
 		}
 	} catch (error) {
 		console.error(error);

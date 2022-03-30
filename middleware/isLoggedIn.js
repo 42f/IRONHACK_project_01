@@ -9,8 +9,8 @@ module.exports = async (req, res, next) => {
     const currentUser = req.session.user;
     const user = await User.findById(currentUser._id);
     req.user = user;
+    next();
   } catch (err) {
     res.redirect('/auth/logout');
   }
-  next();
 };
