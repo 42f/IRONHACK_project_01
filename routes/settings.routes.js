@@ -1,4 +1,4 @@
-const { getSpotifyToken, doImportSongs, redirectSpotifyLogin } = require('../api/spotify-calls');
+const { getSpotifyToken, importFromSpotify, redirectSpotifyLogin } = require('../api/spotify-calls');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
 const Track = require('../models/Track.model')
@@ -27,7 +27,7 @@ router.post("/library/create", isLoggedIn, (req, res, next) => {
   if (mySongs != 'on' && myPlaylists != 'on' && spotifyPlaylist != 'on') {
     res.redirect('/settings/import')
   } else {
-    req.session.playlistData = { mySongs, myPlaylists, spotifyPlaylist };
+    req.session.userFormData = { mySongs, myPlaylists, spotifyPlaylist };
     next();
   }
 }, redirectSpotifyLogin);
@@ -47,7 +47,7 @@ router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
   try {
     const authToken = await getSpotifyToken(userCode);
-    await doImportSongs(req.user, req.session.playlistData, authToken)
+    await importFromSpotify(req.user, req.session.userFormData, authToken)
     res.redirect('/settings/library')
   } catch (error) {
     next(error);
