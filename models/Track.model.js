@@ -4,8 +4,11 @@ const trackSchema = new Schema({
   isrc: { type: String, unique: true, required: true },
   title: { type: String, required: true },
   artist: [{ type: String, required: true }],
-  length: { type: String },
-  genre: [String],
+  duration: { type: String },
+  year: String,
+  album: String,
+  album_id: String,
+  img: String,
   importId: {
     spotifyId: String,
     appleId: String
