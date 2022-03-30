@@ -1,4 +1,4 @@
-<h1>{{group.name}}</h1>
+<h1>{{group.name}} | {{group.participants.length}} members</h1>
 
 <h2>un groupe de {{group.owner.userName}}</h2>
 
@@ -6,13 +6,14 @@
   <div class="container">
     <div class="stats">
       <div class="stats">
-        {{group.match}}
+        {{match}}%
       </div>
     </div>
     <div class="group-details">
       <div class="controls">
-        <a href="">EDIT GROUP</a>
-        <a href="">DELETE GROUP</a>
+        <a href="{{group._id}}/edit" class="btn">EDIT GROUP</a>
+        <a href="{{group._id}}/delete" class="btn">DELETE GROUP</a>
+        <!-- Pop, are you sure ?-->
       </div>
       <div class="participants">
         <table>
@@ -41,10 +42,10 @@
 </section>
 <section class="playlist">
     <div class="container group-playlist">
-  {{#if tracklist.length}}
+  {{#if tracklist}}
     <h3>
       You have
-      <b>{{tracklist.length}}</b>
+      <b></b>
       songs in your library.
     </h3>
     <table>
@@ -69,8 +70,8 @@
                 <img class="library-artwork" src="../images/default-artwork.png" alt="default artwork" />
               {{/if}}
             </td>
-            <td>{{trackId.artist}}</td>
-            <td>{{trackId.title}}</td>
+            <td>{{this.artist}}</td>
+            <td>{{this.title}}</td>
             <td>{{trackId.duration}}</td>
             <td>{{trackId.album}}</td>
             <td>{{trackId.year}}</td>
@@ -85,5 +86,10 @@
       <a href="/settings/import">importing some...</a></p>
   {{/if}}
 
+</div>
+<div class="wrap">
+    <button class="btn">PLAY</button>
+
+    <button class="btn">EXPORT PLAYLIST</button>
 </div>
 </section>

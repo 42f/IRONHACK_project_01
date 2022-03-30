@@ -1,0 +1,31 @@
+<h1>Here you can edit your group : {{group.name}}</h1>
+
+<div class="container">
+  <div class="allUsers">
+    <table id="editGroup">
+      <tbody>
+        {{#each users}}
+          <tr class="table-active">
+            <td><picture><img
+                  src='{{this.avatarUrl}}' 
+                  alt="{{this.userName}}'s avatar"
+                /></picture></td>
+            <th scope="row">{{userName}}</th>
+            <td>{{this.matchGroup.pourcentage}}%
+                <p>Match with this group</p>
+            </td>
+            
+               
+            <td data-groupId="{{this._id}}"><button class="trash-button"><img src="/images/trash.png" alt="remove"></button></td>
+            
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  <div class="form">
+
+  </div>
+</div>
+{{!-- <script src="../../js/editOneGroupClickEvent"></script> --}}
+{{!-- <script src="../js/allGroupsClickEvent.js"></script> --}}
