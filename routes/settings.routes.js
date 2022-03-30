@@ -15,8 +15,6 @@ router.get("/import", isLoggedIn, (req, res, next) => {
 
 router.get("/library", isLoggedIn, async (req, res, next) => {
   try {
-    console.log('curr user', req.user);
-    console.log('curr user sess', req.session.user);
     const tracklist = await req.user?.getLinks();
     res.render("settings/library", { tracklist });
   } catch (error) {
@@ -42,6 +40,7 @@ router.post("/library/create", isLoggedIn, (req, res, next) => {
 router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
   const currentUser = req.user;
+  console.log('CURRENT USERS', currentUser);
   const userCode = req.query.code;
   const receivedstate = req.query.state;
   const storedState = req.session.state;
@@ -54,7 +53,7 @@ router.get("/library/callback", isLoggedIn, async (req, res, next) => {
   delete req.session.state;
 
   try {
-    const authToken = await getSpotifyToken(currentUser, userCode);
+    const authToken = await getSpotifyToken(userCode);
     await importFromSpotify(currentUser, req.session.userFormData, authToken)
     res.redirect('/settings/library')
   } catch (error) {

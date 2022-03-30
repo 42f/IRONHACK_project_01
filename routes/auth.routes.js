@@ -1,5 +1,7 @@
 const router = require("express").Router();
-
+const {
+  StatusCodes,
+} = require('http-status-codes');
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
@@ -14,23 +16,63 @@ const User = require("../models/User.model");
 const isLoggedOut = require("../middleware/isLoggedOut");
 const isLoggedIn = require("../middleware/isLoggedIn");
 
+const signUpFormData = (req) => {
+  return {
+    formTitle: 'Signup Form',
+    signUpForm: true,
+    formAction: 'signup',
+    routePost: `${req.baseUrl}/signup`
+  }
+};
+
+const loginFormData = (req) => {
+  return {
+    formTitle: 'Login Form',
+    formAction: 'login',
+    routePost: `${req.baseUrl}/login`
+  }
+};
+
+function generateFailedSignupForm(req, res, httpStatus, errorMessage) {
+  return res
+    .status(httpStatus)
+    .render('auth/signForm', {
+      ...signUpFormData(req),
+      error: errorMessage
+    });
+}
+
+function generateFailedLoginForm(req, res, httpStatus, errorMessage) {
+  return res
+    .status(httpStatus)
+    .render('auth/signForm', {
+      ...loginFormData(req),
+      error: errorMessage
+    });
+}
+
 router.get("/signup", isLoggedOut, (req, res) => {
-  res.render("auth/signup");
+  res.render('auth/signForm', signUpFormData(req));
 });
 
 router.post("/signup", isLoggedOut, (req, res) => {
   const { email, username, password } = req.body;
 
-  if (!email || !username) {
-    return res.status(400).render("auth/signup", {
-      errorMessage: "Please provide your email and username.",
-    });
+  if (!email) {
+    return generateFailedSignupForm(req, res, StatusCodes.BAD_REQUEST,
+      'missing email');
   }
-
+  if (!username) {
+    return generateFailedSignupForm(req, res, StatusCodes.BAD_REQUEST,
+      'missing username');
+  }
+  if (!password) {
+    return generateFailedSignupForm(req, res, StatusCodes.BAD_REQUEST,
+      'missing password');
+  }
   if (password.length < 8) {
-    return res.status(400).render("auth/signup", {
-      errorMessage: "Your password needs to be at least 8 characters long.",
-    });
+    return generateFailedSignupForm(req, res, StatusCodes.BAD_REQUEST,
+      'weak password...');
   }
 
   //   ! This use case is using a regular expression to control for special characters and min length
@@ -93,7 +135,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
 });
 
 router.get("/login", isLoggedOut, (req, res) => {
-  res.render("auth/login");
+  res.render('auth/signForm', loginFormData(req));
 });
 
 
