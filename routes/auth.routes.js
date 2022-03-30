@@ -1,4 +1,3 @@
-const passport = require('passport');
 const router = require("express").Router();
 
 // ℹ️ Handles password encryption
@@ -20,9 +19,9 @@ router.get("/signup", isLoggedOut, (req, res) => {
 });
 
 router.post("/signup", isLoggedOut, (req, res) => {
-  const { email, userName, password } = req.body;
+  const { email, username, password } = req.body;
 
-  if (!email || !userName) {
+  if (!email || !username) {
     return res.status(400).render("auth/signup", {
       errorMessage: "Please provide your email and username.",
     });
@@ -47,12 +46,13 @@ router.post("/signup", isLoggedOut, (req, res) => {
   */
 
   // Search the database for a user with the email submitted in the form
-  User.findOne().or([{ email }, { userName }]).then((found) => {
+  User.findOne().or([{ email }, { username }]).then((found) => {
     // If the user is found, send the message email is taken
     if (found) {
+      const similarData = email === found.email ? 'Email' : 'Username';
       return res
         .status(400)
-        .render("auth/signup", { errorMessage: "Email already taken." });
+        .render("auth/signup", { errorMessage: `${similarData} already taken.` });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -62,14 +62,15 @@ router.post("/signup", isLoggedOut, (req, res) => {
       .then((hashedPassword) => {
         // Create a user and save it in the database
         return User.create({
-          userName,
+          username,
           email,
           password: hashedPassword,
         });
       })
       .then((user) => {
         // Bind the user to the session object
-        req.session.userId = user._id.toString();
+        req.session.user = user;
+        req.user = user;
         res.redirect("/");
       })
       .catch((error) => {
@@ -81,7 +82,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
         if (error.code === 11000) {
           return res.status(400).render("auth/signup", {
             errorMessage:
-              "Email needs to be unique. The email you chose is already in use.",
+              "Email and Username needs to be unique.",
           });
         }
         return res
@@ -95,28 +96,39 @@ router.get("/login", isLoggedOut, (req, res) => {
   res.render("auth/login");
 });
 
-router.post('/login', (req, res, next) => {
-  passport.authenticate(
-    'local',
-    {
-      failWithError: true,
-      failureRedirect: '/auth/login',
-      failureMessage: true
-    },
-    (err, user, detals) => {
-      if (user) {
-        req.login(user, (err) => {
-          next(err);
-        });
-        console.log(req.session);
-        req.session.userId = req.user._id;
-        res.redirect('/');
-      } else {
-        console.log('ERROR', user, detals, err)
-        res.render('auth/login', {errorMessage: 'invalid credential'})
-      }
-    })(req, res, next)
-  });
+
+router.post("/login", isLoggedOut, async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return generateFailedLoginForm(req, res, StatusCodes.BAD_REQUEST,
+      'missing email');
+  }
+  if (!password) {
+    return generateFailedLoginForm(req, res, StatusCodes.BAD_REQUEST,
+      'missing password');
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return generateFailedLoginForm(req, res, StatusCodes.BAD_REQUEST,
+        'wrong credential');
+    }
+    const isCorrectPassword = await bcrypt.compare(password, user.password);
+    if (isCorrectPassword) {
+      req.session.user = user;
+      return res.redirect('/');
+    } else {
+      return generateFailedLoginForm(req, res, StatusCodes.BAD_REQUEST,
+        'wrong credential');
+    }
+  } catch (error) {
+    console.log(error);
+    return generateFailedLoginForm(req, res, StatusCodes.BAD_REQUEST,
+      'Could not login at the moment, please try again.');
+  }
+});
 
 router.get("/logout", isLoggedIn, (req, res) => {
   req.session.destroy((err) => {

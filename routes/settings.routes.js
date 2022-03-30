@@ -15,6 +15,8 @@ router.get("/import", isLoggedIn, (req, res, next) => {
 
 router.get("/library", isLoggedIn, async (req, res, next) => {
   try {
+    console.log('curr user', req.user);
+    console.log('curr user sess', req.session.user);
     const tracklist = await req.user?.getLinks();
     res.render("settings/library", { tracklist });
   } catch (error) {
@@ -53,7 +55,7 @@ router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
   try {
     const authToken = await getSpotifyToken(currentUser, userCode);
-    await importFromSpotify(req.user, req.session.userFormData, authToken)
+    await importFromSpotify(currentUser, req.session.userFormData, authToken)
     res.redirect('/settings/library')
   } catch (error) {
     next(error);

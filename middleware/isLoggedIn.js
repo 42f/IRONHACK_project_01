@@ -1,8 +1,16 @@
-module.exports = (req, res, next) => {
+const User = require('../models/User.model')
+
+module.exports = async (req, res, next) => {
   // checks if the user is logged in when trying to access a specific page
-  if (!req.session.userId) {
+  if (!req.session.user) {
     return res.redirect("/auth/login");
   }
-  req.userId = req.session.userId;
+  try {
+    const currentUser = req.session.user;
+    const user = await User.findById(currentUser._id);
+    req.user = user;
+  } catch (err) {
+    res.redirect('/auth/logout');
+  }
   next();
 };
