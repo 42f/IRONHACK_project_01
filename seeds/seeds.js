@@ -127,7 +127,7 @@ function generateFakeTracks(quantity) {
 // Genereta fake links
 async function fakeLinks(usersDB, tracksDB) {
   const links = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     let aLink = {
       trackId: tracksDB[Math.floor(Math.random() * tracksDB.length)]._id,
       userId: usersDB[Math.floor(Math.random() * usersDB.length)]._id,
@@ -148,8 +148,9 @@ function generateOneGroup(usersDB) {
     participants: [],
   };
   
-  let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
-  randomLen = randomLen > 5 ? 5 : randomLen;
+  // let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
+  // randomLen = randomLen > 5 ? 5 : randomLen;
+  let randomLen = 19;
   for(let i = 0; i < randomLen; i++) {
     const randomIndex = Math.floor(Math.random() * usersDB.length);
     const newParticipant = usersDB.splice(randomIndex, 1)[0];
@@ -175,8 +176,9 @@ async function seedDB() {
     await User.deleteMany();
     await Track.deleteMany();
     await Link.deleteMany();
+    await Group.deleteMany();
     // Populate track array with random tracks
-    const tracks = generateFakeTracks(50);
+    const tracks = generateFakeTracks(5);
     // Populate users array with random users
     const users = generateFakeUsers(20);
 
