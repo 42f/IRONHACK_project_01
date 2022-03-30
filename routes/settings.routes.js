@@ -23,13 +23,24 @@ router.get("/library", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// !! TODO change to post !
+router.get("/library/delete", isLoggedIn, async (req, res, next) => {
+  try {
+    await Link.deleteMany({ userId: req.user._id });
+    res.redirect('/settings/library');
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.post("/library/create", isLoggedIn, (req, res, next) => {
   let { mySongs, myPlaylists, spotifyPlaylists } = req.body;
   mySongs = mySongs === 'on';
   myPlaylists = myPlaylists === 'on';
   spotifyPlaylists = spotifyPlaylists === 'on';
 
-  if (mySongs && myPlaylists && spotifyPlaylist) {
+  if (!mySongs && !myPlaylists && !spotifyPlaylists) {
     res.redirect('/settings/import')
   } else {
     req.session.userFormData = { mySongs, myPlaylists, spotifyPlaylists };
