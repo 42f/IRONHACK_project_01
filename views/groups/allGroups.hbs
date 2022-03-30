@@ -39,7 +39,8 @@
         </tr>
       </thead>
       <tbody>
-        {{#each allMyGroups}}
+        {{#if myOwnGroups}}
+        {{#each myOwnGroups}}
           <tr class="table-active" data-groupId="{{this._id}}" >
             <div class="table-active">
 
@@ -49,10 +50,27 @@
                   id='{{this._id}}'
                 /></picture></td>
             <th id='{{this._id}}'>{{name}}</th>
-            <td id='{{this._id}}'>{{match.numOfMatches}}/{{match.numOfuserBTracks}}</td>
+            <td id='{{this._id}}'>{{match}}%</td>
             </div>
           </tr>
         {{/each}}
+        {{/if}}
+           {{#if myOtherGroups}}
+        {{#each myOtherGroups}}
+          <tr class="table-active" data-groupId="{{this._id}}" >
+            <div class="table-active">
+
+            <td><picture><img
+                  src="{{owner.avatarUrl}}"
+                  alt="{{owner.userName}}'s avatar"
+                  id='{{this._id}}'
+                /></picture></td>
+            <th id='{{this._id}}'>{{name}}</th>
+            <td id='{{this._id}}'>{{match}}%</td>
+            </div>
+          </tr>
+        {{/each}}
+        {{/if}}
 
       </tbody>
     </table>

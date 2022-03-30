@@ -9,8 +9,7 @@ const groupSchema = new Schema({
   participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
 
-groupSchema.methods.getCumulativePlaylist = async function (Id) {
-
+groupSchema.methods.getCumulativePlaylist = async function () {
   let cumulativeTracks = [];
   const commonGroupTracks = {};
 
@@ -37,21 +36,44 @@ groupSchema.methods.getCumulativePlaylist = async function (Id) {
     commonGroupTracks[track.isrc] = track;
   });
 
-  cumulativeTracks.forEach( track=>{
-    console.log(track.isrc, track.occurence)
-  })
+  cumulativeTracks.forEach((track) => {
+    // console.log(track.isrc, track.occurence)
+  });
 
   for (let track in commonGroupTracks) {
-    console.log('ici - ', track, commonGroupTracks[track].occurence);
+    // console.log("ici - ", track, commonGroupTracks[track].occurence);
   }
 
   return commonGroupTracks;
-
+  // retourne un object avec les sons en communs
 };
 
-// groupSchema.methods.extractStatistic(){
-  
-// }
+groupSchema.methods.extractStatistic = async function () {
+  // Dans commonGroupTrack, additionner les tracks occurantes plus d'une fois et diviser par Longueur des values
+  // Renvoi un number, ou un nombre en string
+
+  const groupTracks = await this.getCumulativePlaylist();
+  // console.log('APPEL OOOKKKK !', groupTracks['3850'].occurence)
+
+  let nbOfduplicatedTracks = 0;
+
+  for (let obj in groupTracks) {
+    if (groupTracks[obj].occurence > 1) {
+      nbOfduplicatedTracks++;
+    }
+  }
+  //   console.log('DUPLICATE TRACK',nbOfduplicatedTracks)
+
+  // Match format 00.00% before return
+  const match = (
+    (nbOfduplicatedTracks / Object.keys(groupTracks).length) *
+    100
+  ).toFixed(0);
+
+//   console.log("MAAAAACTH", match);
+
+  return match;
+};
 
 const Group = model("Group", groupSchema);
 
