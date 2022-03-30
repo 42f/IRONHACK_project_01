@@ -5,6 +5,7 @@ const {
 	REDIRECT_URL,
 	SPOTIFY_AUTH_URL,
 } = require('../utils/consts')
+const { convertMsToString } = require('../utils/convertMsToString')
 const generateRandomString = require('../utils/random-generator')
 const axios = require('axios')
 const qs = require('qs');
@@ -135,6 +136,10 @@ async function getLikedSongsFromSpotifyApi(authToken) {
 			title: item.name,
 			artist: item.artists.map(artist => artist.name),
 			album: item.album.name,
+			album_id: item.album.id,
+			duration: convertMsToString(item.duration_ms),
+			year: item.album.release_date.split('-')[0],
+			img: item.album.images[0]?.url,
 			importId: {
 				spotifyId: item.id,
 			}
