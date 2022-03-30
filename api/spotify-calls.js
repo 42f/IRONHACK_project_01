@@ -135,7 +135,7 @@ async function insertTracks(candidateTracks) {
 function transformSpotifySongsInTracks(spotifySongs) {
 	return spotifySongs.map(item => {
 		return {
-			isrc: item?.isrc || item?.external_ids?.isrc ,
+			isrc: item?.isrc || item?.external_ids?.isrc,
 			title: item?.title || item?.name,
 			artist: item?.artists?.map(artist => artist?.name) || item?.artist,
 			album: item?.album?.name || item?.album,
@@ -169,7 +169,7 @@ async function fetchSongsFromSpotify(url, authToken) {
 				const fetchedSongs = await fetchEndpoint(authToken, url);
 				url = fetchedSongs.next;
 				const tracks = fetchedSongs?.items.map(item => item.track);
-				likedSpotifyTracks = [...likedSpotifyTracks, ...tracks];
+				likedSpotifyTracks.push(...tracks);
 			} while (url);
 			return transformSpotifySongsInTracks(likedSpotifyTracks);
 		} catch (err) {
@@ -197,7 +197,7 @@ async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 			let playlists;
 			if (userFormData.myPlaylists && userFormData.spotifyPlaylists) {
 				playlists = fetchedPlaylists?.items
-					.filter( item => item.tracks.total > 0 )
+					.filter(item => item.tracks.total > 0)
 					.map(item => item.tracks.href);
 			} else if (userFormData.myPlaylists) {
 				playlists = fetchedPlaylists?.items
@@ -208,7 +208,7 @@ async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 					.filter(item => !isOwned(spotifyUserId, item) && item.tracks.total > 0)
 					.map(item => item.tracks.href);
 			}
-			allPlaylistsUrl = [...allPlaylistsUrl, ...playlists];
+			allPlaylistsUrl.push(...playlists);
 		} while (url);
 		return allPlaylistsUrl;
 	} catch (error) {
@@ -219,15 +219,17 @@ async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 
 async function importPlaylistSongs(spotifyUserId, userFormData, authToken) {
 	try {
+		let start = Date.now();
 		const allPlaylistsUrl = await getAllPlaylistUrls(spotifyUserId, userFormData, authToken);
 		let allPlaylistsTracks = [];
 		for (let i = 0; i < allPlaylistsUrl.length; i++) {
 			const currentPlaylistTracks = await fetchSongsFromSpotify(allPlaylistsUrl[i], authToken);
 			if (currentPlaylistTracks.length) {
-				allPlaylistsTracks = [...allPlaylistsTracks, ...currentPlaylistTracks];
+				allPlaylistsTracks.push(...currentPlaylistTracks);
 			}
 		}
-		return transformSpotifySongsInTracks(allPlaylistsTracks);
+		console.log('time to fetch data from spotify API: ', Date.now() - start, 'ms');
+		return allPlaylistsTracks;
 	} catch (error) {
 		console.error(error);
 		return [];
@@ -244,7 +246,7 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 		if (userFormData.myPlaylists || userFormData.spotifyPlaylists) {
 			const spotifyUserId = await getUserSpotifyId(authToken);
 			const playlistsTracks = await importPlaylistSongs(spotifyUserId, userFormData, authToken);
-			tracksObjectToAdd = [...tracksObjectToAdd, ...playlistsTracks];
+			tracksObjectToAdd.push(...playlistsTracks);
 		}
 
 
@@ -263,4 +265,3 @@ module.exports = {
 	importFromSpotify,
 	getSpotifyToken
 }
-//mySongs, myPlaylists, spotifyPlaylisst
