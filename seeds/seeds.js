@@ -174,6 +174,7 @@ async function seedDB() {
     await User.deleteMany();
     await Track.deleteMany();
     await Link.deleteMany();
+    await Group.deleteMany();
     // Populate track array with random tracks
     const tracks = generateFakeTracks(2000);
     // Populate users array with random users

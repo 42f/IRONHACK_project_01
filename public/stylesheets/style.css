@@ -11,7 +11,6 @@ h1 {
   color: 15px;
 }
 
-
 .roomsList {
   display: flex;
   flex-wrap: wrap;
@@ -64,6 +63,11 @@ footer button {
 
 li {
   list-style: none;
+}
+
+.container {
+  border: solid blue 2px;
+  height: 70vh;
 }
 
 .trash-button {
