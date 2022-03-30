@@ -1,0 +1,63 @@
+<h1>Matches</h1>
+
+<h2>Users : {{users.length}} | Your group(s) : {{allMyGroups.length}}</h2>
+
+<div class="container d-flex allUsers">
+  <div class="col-6">
+
+    <table class="table table-hover allUsers">
+      <thead>
+        <tr>
+          <th scope="col">Avatar</th>
+          <th scope="col">User name</th>
+          <th scope="col">Match</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr class="table-active">
+            <td><picture><img
+                  src="{{avatarUrl}}"
+                  alt="{{userName}}'s avatar"
+                /></picture></td>
+            <th scope="row">{{userName}}</th>
+            <td>{{match.numOfMatches}}/{{match.numOfuserBTracks}}</td>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div> <!--column 1 -->
+
+   <div class="col-6">
+      <table class="table table-hover myGroups" id="myGroups">
+      <thead>
+        <tr>
+          <th scope="col">Group Owner</th>
+          <th scope="col">Group Name</th>
+          <th scope="col">Match</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each allMyGroups}}
+          <tr class="table-active" data-groupId="{{this._id}}" >
+            <div class="table-active">
+
+            <td><picture><img
+                  src="{{owner.avatarUrl}}"
+                  alt="{{owner.userName}}'s avatar"
+                  id='{{this._id}}'
+                /></picture></td>
+            <th id='{{this._id}}'>{{name}}</th>
+            <td id='{{this._id}}'>{{match.numOfMatches}}/{{match.numOfuserBTracks}}</td>
+            </div>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="../js/groupClickEvent.js"></script>
