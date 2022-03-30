@@ -1,21 +1,44 @@
 <h1>Settings</h1>
 <div class="library">
-  <p>My library here</p>
-
   {{#if tracklist.length}}
-    <ul>
-      {{#each tracklist.trackId}}
-        <li>
-          {{_id}}
-          {{artist}}
-          {{title}}
-          {{length}}
-          {{#each genr}}
-            {{this}}
-          {{/each}}
-        </li>
-      {{/each}}
-    </ul>
+    <h3>
+      You have
+      <b>{{tracklist.length}}</b>
+      songs in your library.
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Artwork</th>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Length</th>
+          <th>Album</th>
+          <th>Year</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each tracklist}}
+          <tr>
+            <td>
+              {{#if trackId.img}}
+                <img class="library-artwork" src="{{trackId.img}}" alt="{{trackId.album}}">
+              {{else}}
+                <img class="library-artwork" src="../images/default-artwork.png" alt="default artwork" />
+              {{/if}}
+            </td>
+            <td>{{trackId.artist}}</td>
+            <td>{{trackId.title}}</td>
+            <td>{{trackId.duration}}</td>
+            <td>{{trackId.album}}</td>
+            <td>{{trackId.year}}</td>
+            <td></td>
+            <td><button class="trash-button"><img src="../images/trash.png" alt="remove"></button></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   {{else}}
     <p>No tracks in library yet, try
       <a href="/settings/import">importing some...</a></p>

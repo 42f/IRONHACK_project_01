@@ -27,7 +27,9 @@ userSchema.methods.getLibrary; ->
 */
 userSchema.methods.getLinks = async function () {
   try {
-    return await Link.find({ userId: this._id }).populate('trackId');
+    return await Link
+      .find({ userId: this._id }, null, { sort: {'updatedAt': -1 }})
+      .populate("trackId");
   } catch (err) {
     console.log(err);
     return [];
