@@ -12,12 +12,10 @@ const qs = require('qs');
 const Track = require('../models/Track.model');
 const Link = require('../models/Link.model');
 const User = require('../models/User.model');
-const { all } = require('../routes/settings.routes');
 
 
 function fabricateRedirectUrl(state) {
 	const scopes = 'user-read-private user-library-read playlist-modify-private playlist-read-collaborative playlist-read-private playlist-modify-public user-top-read';
-	console.log('REDIRECT_URL', REDIRECT_URL);
 	const url = new URL(SPOTIFY_AUTH_URL);
 	url.searchParams.append('response_type', 'code');
 	url.searchParams.append('client_id', CLIENT_ID);
@@ -34,7 +32,7 @@ function redirectSpotifyLogin(req, res, next) {
 	res.redirect(url.href);
 }
 
-async function getSpotifyToken(currentUser, userCode) {
+async function getSpotifyToken(userCode) {
 	const data = {
 		code: userCode,
 		redirect_uri: REDIRECT_URL,
@@ -94,15 +92,12 @@ async function insertTracks(likedTracks) {
 	let insertedTracksIds;
 	try {
 		const existingTracks = await Track.find();
-		const start = Date.now();
-
 		likedTracks.forEach(item => {
 			const existingTrack = existingTracks.some(track => track.isrc === item.isrc);
 			if (existingTrack) {
 				item._id = existingTrack._id
 			}
 		})
-		console.log('clearning took ', (Date.now() - start) /1000 );
 		const alreadyInsertedTracks = likedTracks.filter(track => track._id);
 		const newTracksToInsert = likedTracks.filter(track => !track._id);
 
@@ -143,7 +138,6 @@ function transformSpotifySongsInTracks(spotifySongs) {
 }
 
 async function getUserSpotifyId(authToken) {
-	console.log('FETCH ME INFOS');
 	let url = 'https://api.spotify.com/v1/me';
 	try {
 		const meData = await fetchEndpoint(authToken, url);
@@ -155,15 +149,20 @@ async function getUserSpotifyId(authToken) {
 
 async function fetchSongsFromSpotify(url, authToken) {
 	if (authToken && url) {
-		let likedSpotifyTracks = [];
-		do {
-			const fetchedSongs = await fetchEndpoint(authToken, url);
-			url = fetchedSongs.next;
-			const tracks = fetchedSongs?.items.map(item => item.track);
-			likedSpotifyTracks = [...likedSpotifyTracks, ...tracks];
-		} while (url);
-
-		return transformSpotifySongsInTracks(likedSpotifyTracks);
+		try {
+			url += '?limit=50';
+			let likedSpotifyTracks = [];
+			do {
+				const fetchedSongs = await fetchEndpoint(authToken, url);
+				url = fetchedSongs.next;
+				const tracks = fetchedSongs?.items.map(item => item.track);
+				likedSpotifyTracks = [...likedSpotifyTracks, ...tracks];
+			} while (url);
+			return transformSpotifySongsInTracks(likedSpotifyTracks);
+		} catch (err) {
+			console.error(err);
+			return [];
+		}
 	}
 }
 
@@ -174,7 +173,7 @@ function isOwned(spotifyUserId, item) {
 async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 	try {
 		let allPlaylistsUrl = [];
-		let url = 'https://api.spotify.com/v1/me/playlists';
+		let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
 
 		do {
 			const fetchedPlaylists = await fetchEndpoint(authToken, url);
@@ -205,12 +204,13 @@ async function getAllPlaylistUrls(spotifyUserId, userFormData, authToken) {
 async function importPlaylistSongs(spotifyUserId, userFormData, authToken) {
 	try {
 		const allPlaylistsUrl = await getAllPlaylistUrls(spotifyUserId, userFormData, authToken);
-		let playlistsTracks = [];
+		let allPlaylistsTracks = [];
 		for (let i = 0; i < allPlaylistsUrl.length; i++) {
-			const playlistTracks = await fetchSongsFromSpotify(allPlaylistsUrl[i], authToken);
-			playlistsTracks = [...playlistsTracks, ...playlistTracks];
+			console.log('FETCHING PLAYLIST ', i + 1, ' OF ', allPlaylistsUrl.length, ' -> ', allPlaylistsUrl[i]);
+			const currentPlaylistTracks = await fetchSongsFromSpotify(allPlaylistsUrl[i], authToken);
+			allPlaylistsTracks = [...allPlaylistsTracks, ...currentPlaylistTracks];
 		}
-		return transformSpotifySongsInTracks(likedSpotifyTracks);
+		return transformSpotifySongsInTracks(allPlaylistsTracks);
 	} catch (error) {
 		console.error(error);
 		return [];
@@ -227,9 +227,7 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 		}
 		if (userFormData.myPlaylists || userFormData.spotifyPlaylists) {
 			const spotifyUserId = await getUserSpotifyId(authToken);
-			console.log('USER ID ---------', spotifyUserId);
-			await importPlaylistSongs(spotifyUserId, userFormData, authToken);
-			const playlistsTracks = await importPlaylistSongs(currentUser, userFormData, authToken);
+			const playlistsTracks = await importPlaylistSongs(spotifyUserId, userFormData, authToken);
 			tracksObjectToAdd = [...tracksObjectToAdd, ...playlistsTracks];
 		}
 
