@@ -1,2 +1,15 @@
-<h1>{{appTitle}} 🚀</h1>
+<h1>{{appTitle}} 🎶</h1>
 <p>Welcome {{username}}</p>
+
+{{#if quantities}}
+  <p>Currently our site hosts:</p>
+  <ul>
+		{{#each quantities}}
+    <li>
+		{{#each this}}
+			{{this}}
+		{{/each}}
+		</li>
+		{{/each}}
+  </ul>
+{{/if}}

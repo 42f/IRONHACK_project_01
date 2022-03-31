@@ -5,7 +5,7 @@ const {
 const { importFromSpotify } = require('../api/spotify-import');
 
 const mongoose = require('mongoose');
-const { createPlaylist } = require('../api/spotify-export');
+const { exportPlaylist } = require('../api/spotify-export');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
 
@@ -71,17 +71,21 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
   try {
     const authToken = await getSpotifyToken(userCode);
     if (createPlaylistGroupId) {
-      if (!mongoose.Types.ObjectId.isValid(createPlaylistGroupId) &&createPlaylistGroupId === 'test') {
-        await createPlaylist(currentUser, createPlaylistGroupId, authToken);
-        return res.redirect('/settings/library');
-  //TODO -> uncomment for production        // return res.status(400).send('Invalid group id');
+      if (!mongoose.Types.ObjectId.isValid(createPlaylistGroupId)) {
+        if (createPlaylistGroupId === 'ownTracks') {
+          await exportPlaylist(currentUser, createPlaylistGroupId, authToken);
+          return res.redirect('/');
+        } else {
+          return res.status(400).send('Invalid group id');
+        }
+      } else {
+        const targetGroup = await Group.findById(createPlaylistGroupId);
+        if (!targetGroup) {
+          return res.status(400).send('Could not find group');
+        }
+        await exportPlaylist(currentUser, targetGroup, authToken);
+        return res.render('settings/success-export');
       }
-      const targetGroup = await Group.findById(createPlaylistGroupId);
-      if (!targetGroup) {
-        return res.status(400).send('Could not find group');
-      }
-      await createPlaylist(currentUser, targetGroup, authToken);
-      return res.render('settings/success-export');
     } else {
       await currentUser.setUpdatingStatus(true);
       // check state in cookie, if ok clear it, if not redirect
@@ -99,8 +103,8 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
   }
 });
 
-router.get("/export/test", isLoggedIn, isNotUpdating, async (req, res, next) => {
-  req.session.createPlaylistGroupId = 'test';
+router.get("/export/own-tracks", isLoggedIn, isNotUpdating, async (req, res, next) => {
+  req.session.createPlaylistGroupId = 'ownTracks';
   next();
 }, redirectSpotifyLogin);
 

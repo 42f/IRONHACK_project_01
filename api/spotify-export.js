@@ -2,62 +2,56 @@ const {
 	postToEndpoint,
 	getUserSpotifyId,
 } = require('./spotify-api-calls');
+const getFullDate = require('../utils/getFullDate');
 
-// const {
-// 	CLIENT_ID,
-// 	SPOTIFY_TOKEN_URL,
-// 	CLIENT_SECRET,
-// 	REDIRECT_URL,
-// 	SPOTIFY_AUTH_URL,
-// } = require('../utils/consts')
-// const { convertMsToString } = require('../utils/convertMsToString')
-// const generateRandomString = require('../utils/random-generator')
-// const axios = require('axios')
-// const qs = require('qs');
-// const Track = require('../models/Track.model');
-// const Link = require('../models/Link.model');
-// const User = require('../models/User.model');
+async function addTracksToPlaylist(playlistId, tracks, authToken) {
+	do {
+		const uploadTracks = tracks.splice(0, 99);
+		await postToEndpoint(
+			authToken,
+			`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+			{
+				uris: uploadTracks,
+			},
+		);
+	} while (tracks.length);
+}
 
-async function testExport(currentUser, authToken) {
+async function createOnePlaylist(userSpotifyId, playlistName, authToken) {
+	const { data } = await postToEndpoint(
+		authToken,
+		`https://api.spotify.com/v1/users/${userSpotifyId}/playlists`,
+		{
+			name: playlistName,
+			public: false,
+		}
+	);
+	return data.id;
+}
+
+async function exportOwnTracks(currentUser, authToken) {
 	try {
 		const userLib = (await currentUser.getLibrary()).map(track => track?.importId?.spotifyUri);
-		console.log('userLib', userLib);
-		const userId = await getUserSpotifyId(authToken);
+		const name = `MyTracks_${getFullDate()}`;
 
-		const { data } = await postToEndpoint(
-			authToken,
-			`https://api.spotify.com/v1/users/${userId}/playlists`,
-			{
-				name: `test_${Date.now()}`,
-				public: false,
-			}
-		);
-		const playlistId = data?.id;
+		const userSpotifyId = await getUserSpotifyId(authToken);
+		const playlistId = await createOnePlaylist(userSpotifyId, name, authToken);
+
 		if (playlistId) {
-			console.log('playlistId------------- ', playlistId);
-			do {
-				const uploadTracks = userLib.splice(0, 99);
-				await postToEndpoint(
-					authToken,
-					`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-					{
-						uris: uploadTracks,
-					},
-				);
-			} while (userLib.length);
+			await	addTracksToPlaylist(playlistId, userLib, authToken);
 		} else {
-			throw new Error('no playlist id');
+			throw new Error('failed to create a new playlist');
 		}
 	} catch (error) {
 		console.error('error', error);
+		throw new Error('failed to create a new playlist');
 	}
 }
 
-async function createPlaylist(currentUser, originGroup, authToken) {
-	console.log('CREATE PLAYLIST function', originGroup);
+async function exportPlaylist(currentUser, originGroup, authToken) {
 	try {
-		if (originGroup === 'test') {
-			await testExport(currentUser, authToken);
+		if (originGroup === 'ownTracks') {
+			return await exportOwnTracks(currentUser, authToken);
 		}
 	} catch (error) {
 		console.error(error);
@@ -65,6 +59,6 @@ async function createPlaylist(currentUser, originGroup, authToken) {
 }
 
 module.exports = {
-	createPlaylist,
+	exportPlaylist,
 
 }
