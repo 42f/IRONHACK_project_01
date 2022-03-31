@@ -40,7 +40,7 @@ const starterUsers = [
 function generateFakeUsers(quantity) {
   const users = starterUsers;
   for (let i = 0; i < quantity; i++) {
-    const usernameValue = faker.internet.username();
+    const usernameValue = faker.internet.userName();
     let user = {
       email: faker.internet.email(),
       username: usernameValue,
