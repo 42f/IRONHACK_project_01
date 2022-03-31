@@ -30,7 +30,8 @@ userSchema.methods.getLinks = async function () {
   try {
     return await Link
       .find({ userId: this._id }, null, { sort: { 'updatedAt': -1 } })
-      .populate("trackId");
+      .populate("trackId")
+      .filter(link => link.trackId);
   } catch (err) {
     console.log(err);
     return [];
