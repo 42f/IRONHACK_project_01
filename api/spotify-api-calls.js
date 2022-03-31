@@ -74,6 +74,7 @@ async function fetchEndpoint(authToken, url) {
 
 async function postToEndpoint(authToken, url, sendData) {
 	const headers = {
+		'content-type': 'application/json',
 		'Authorization': 'Bearer ' + authToken
 	}
 	const { status, data } = await axios({
@@ -82,9 +83,8 @@ async function postToEndpoint(authToken, url, sendData) {
 		url,
 		data: sendData
 	});
-	if (status != 200) {
+	if (status != 201) {
 		console.error(`Got ${status} code from Spotify API.`);
-		// throw new Error(data);
 	}
 	return {status, data};
 }
