@@ -1,11 +1,12 @@
 const async = require("hbs/lib/async");
+const { faker } = require("@faker-js/faker");
 const { Schema, model } = require("mongoose");
 const Link = require("./Link.model");
 const Track = require("./Track.model");
 const User = require("./User.model");
 
 const groupSchema = new Schema({
-  name: String,
+  name: { type: String, default: faker?.company?.bs() || "Group" },
   owner: { type: Schema.Types.ObjectId, ref: "User" },
   participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
@@ -13,16 +14,14 @@ const groupSchema = new Schema({
 groupSchema.methods.getCommonGroupTracks = async function () {
   let cumulativeTracks = [];
   const commonGroupTracks = {};
-  
+
   try {
     let userIds = [this.owner._id];
     for (let i = 0; i < this.participants.length; i++) {
       userIds.push(this.participants[i]._id);
     }
-    console.log('USERS IDS', userIds)
 
     const commonLinks = await Link.find({ 'userId': { $in: userIds } }).populate('userId trackId');
-    console.log('COMMON LINKS', commonLinks);
 
     if (commonLinks?.length) {
       const commonTracks = commonLinks.map(link => link.trackId);
@@ -38,17 +37,17 @@ groupSchema.methods.getCommonGroupTracks = async function () {
     }
     return cumulativeTracks;
   } catch (error) {
-   console.error(error) 
+   console.error(error)
    return [];
   }
-  
-  
+
+
   /*
   let cumulativeTracks = [];
   const commonGroupTracks = {};
 
 
-  
+
   // 1. Get the owner's tracks
   // Push them in the cumulativeTracks array
   await this.populate("owner participants");
@@ -91,9 +90,9 @@ groupSchema.methods.getGroupMatch = async function () {
   // Renvoi un number, ou un nombre en string
 
   // console.log('APPEL OOOKKKK !', groupTracks['3850'].occurence)
-  
+
   // let nbOfduplicatedTracks = 0;
-  
+
   // for (let obj in groupTracks) {
     //   if (groupTracks[obj].occurence > 1) {
       //     nbOfduplicatedTracks++;
@@ -101,14 +100,15 @@ groupSchema.methods.getGroupMatch = async function () {
       // }
       // console.log('DUPLICATE TRACK',nbOfduplicatedTracks)
       // console.log("MAAAAACTH", match);
-      
+
       // Match format 00.00% before return
     const groupTracks = await this.getCommonGroupTracks();
-    const match = ((groupTracks.length / Object.keys(groupTracks).length) * 100)
-    .toFixed(0);
+    return Object.keys(groupTracks).length;
+  //   const match = ((groupTracks.length / Object.keys(groupTracks).length) * 100)
+  //   .toFixed(0);
 
 
-  return match;
+  // return match;
 };
 
 groupSchema.methods.getMatchUserWithGroup = async function (user) {
@@ -137,10 +137,10 @@ groupSchema.methods.getMatchUserWithGroup = async function (user) {
 
 groupSchema.methods.getUsersWithCheckedStatus =
 async function (user) {
-  
+
   return this.participants.some(p => p._id.toString() === user._id.toString())
   // console.log(this.participants, 'PARTICIPANT MODEL');
-  // let status = 
+  // let status =
   // this.participants.forEach(participant=>{
   //   if(participant._id.toString() === user._id.toString()){
   //     isChecked['checked']=1;
