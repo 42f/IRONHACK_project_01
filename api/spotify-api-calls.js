@@ -83,9 +83,8 @@ async function postToEndpoint(authToken, url, sendData) {
 		url,
 		data: sendData
 	});
-	if (status != 200) {
+	if (status != 201) {
 		console.error(`Got ${status} code from Spotify API.`);
-		// throw new Error(data);
 	}
 	return {status, data};
 }

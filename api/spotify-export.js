@@ -20,27 +20,31 @@ const {
 
 async function testExport(currentUser, authToken) {
 	try {
-
+		const userLib = (await currentUser.getLibrary()).map(track => track?.importId?.spotifyUri);
+		console.log('userLib', userLib);
 		const userId = await getUserSpotifyId(authToken);
+
 		const { data } = await postToEndpoint(
 			authToken,
 			`https://api.spotify.com/v1/users/${userId}/playlists`,
 			{
-				name: 'test',
+				name: `test_${Date.now()}`,
 				public: false,
 			}
 		);
 		const playlistId = data?.id;
 		if (playlistId) {
 			console.log('playlistId------------- ', playlistId);
-			const playlist = await postToEndpoint(
-				authToken,
-				`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-				{
-					uris: ['spotify:track:1SC5rEoYDGUK4NfG82494W'],
-				},
-			);
-			console.log(playlistId);
+			do {
+				const uploadTracks = userLib.splice(0, 99);
+				await postToEndpoint(
+					authToken,
+					`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+					{
+						uris: uploadTracks,
+					},
+				);
+			} while (userLib.length);
 		} else {
 			throw new Error('no playlist id');
 		}

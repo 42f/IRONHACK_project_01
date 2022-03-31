@@ -190,6 +190,16 @@ async function importPlaylistSongs(spotifyUserId, userFormData, authToken) {
 	}
 }
 
+function removeDuplicates(tracksObjectToAdd) {
+	const tracksSeen = new Set();
+	return tracksObjectToAdd.filter(track => {
+		if (!track.isrc) { return false }
+		const duplicate = tracksSeen.has(track.isrc);
+		tracksSeen.add(track.isrc);
+		return !duplicate;
+	});
+}
+
 async function importFromSpotify(currentUser, userFormData, authToken) {
 	try {
 		let tracksObjectToAdd = [];
@@ -202,8 +212,7 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 			const playlistsTracks = await importPlaylistSongs(spotifyUserId, userFormData, authToken);
 			tracksObjectToAdd.push(...playlistsTracks);
 		}
-
-
+		tracksObjectToAdd = removeDuplicates(tracksObjectToAdd);
 		const tracksAfterInsert = await insertTracks(tracksObjectToAdd);
 		if (tracksAfterInsert?.length) {
 			await insertLinks(currentUser, tracksAfterInsert);
