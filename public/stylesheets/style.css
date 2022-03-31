@@ -66,7 +66,7 @@ li {
 }
 
 .container {
-  border: solid blue 2px;
+  /* border: solid blue 2px; */
   height: 70vh;
 }
 
@@ -100,7 +100,7 @@ li {
 img.avatar{
   width: 100px;
 }
-div.form-check{
+/* div.form-check{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -108,9 +108,6 @@ div.form-check{
   max-height: 7em;
 }
 
-div.form-check > * {
-  
-}
 label .user{
   display: flex;
   flex-direction: row;
@@ -142,5 +139,5 @@ form#delete-form{
   width: 100%;
   display: flex;
   justify-content: center;
-}
+} */
 

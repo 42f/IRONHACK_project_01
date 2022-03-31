@@ -2,80 +2,95 @@
 
 <h2>Users : {{users.length}} | Your group(s) : {{allMyGroups.length}}</h2>
 
-<div class="container d-flex allUsers">
-  <div class="col-6">
-
-    <table class="table table-hover allUsers">
-      <thead>
-        <tr>
-          <th scope="col">Avatar</th>
-          <th scope="col">User name</th>
-          <th scope="col">Match</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each users}}
-          <tr class="table-active">
-            <td><picture><img
-                  src="{{avatarUrl}}"
-                  alt="{{username}}'s avatar"
-                /></picture></td>
-            <th scope="row">{{username}}</th>
-            <td>{{match.numOfMatches}}/{{match.numOfuserBTracks}}</td>
-          </tr>
-        {{/each}}
-
-      </tbody>
-    </table>
-  </div> <!--column 1 -->
-
-   <div class="col-6">
+<section class="all-groups section">
+  <div class="container">
+    <div class="left my-groups column">
       <table class="table table-hover myGroups" id="myGroups">
-      <thead>
-        <tr>
-          <th scope="col">Group Owner</th>
-          <th scope="col">Group Name</th>
-          <th scope="col">Match</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#if myOwnGroups}}
-        {{#each myOwnGroups}}
-          <tr class="table-active" data-groupId="{{this._id}}" >
-            <div class="table-active">
-
-            <td><picture><img
-                  src="{{owner.avatarUrl}}"
-                  alt="{{owner.username}}'s avatar"
-                  id='{{this._id}}'
-                /></picture></td>
-            <th id='{{this._id}}'>{{name}}</th>
-            <td id='{{this._id}}'>{{match}}%</td>
-            </div>
+        <thead>
+          <tr>  
+            <th colspan="3">MY GROUPS</th>
+            
           </tr>
-        {{/each}}
-        {{/if}}
-           {{#if myOtherGroups}}
-        {{#each myOtherGroups}}
-          <tr class="table-active" data-groupId="{{this._id}}" >
-            <div class="table-active">
-
-            <td><picture><img
-                  src="{{owner.avatarUrl}}"
-                  alt="{{owner.userName}}'s avatar"
-                  id='{{this._id}}'
-                /></picture></td>
-            <th id='{{this._id}}'>{{name}}</th>
-            <td id='{{this._id}}'>{{match}}%</td>
-            </div>
+          <tr>
+            <th scope="col">Group Owner</th>
+            <th scope="col">Group Name</th>
+            <th scope="col">Match</th>
           </tr>
-        {{/each}}
-        {{/if}}
+        </thead>
+        <tbody>
+          {{#if myOwnGroups}}
+            {{#each myOwnGroups}}
+              <tr class="table-active" data-groupId="{{this._id}}">
+                <div class="table-active">
 
-      </tbody>
-    </table>
+                  <td><picture><img
+                        src="{{owner.avatarUrl}}"
+                        alt="{{owner.username}}'s avatar..."
+                        id="{{this._id}}"
+                      /></picture></td>
+                  <th id="{{this._id}}">{{name}}</th>
+                  <td id="{{this._id}}">{{match}}%</td>
+                </div>
+              </tr>
+            {{/each}}
+          {{/if}}
+          {{#if myOtherGroups}}
+            {{#each myOtherGroups}}
+              <tr class="table-active" data-groupId="{{this._id}}">
+                <div class="table-active">
+
+                  <td><picture><img
+                        src="{{owner.avatarUrl}}"
+                        alt="{{owner.userName}}'s avatar"
+                        id="{{this._id}}"
+                      /></picture></td>
+                  <th id="{{this._id}}">{{name}}</th>
+                  <td id="{{this._id}}">{{match}}%</td>
+                </div>
+              </tr>
+            {{/each}}
+          {{/if}}
+
+        </tbody>
+      </table>
+    </div>
+    <!-- colonne de gauche -->
+
+    <!-- SEPARATEUR COLONNE -->
+
+    <div class="all-users right column">
+      <table class="table table-hover">
+        <thead>
+          <tr>  
+            <th colspan="3">ALL USERS</th>
+            
+          </tr>
+          <tr>
+            <th scope="col">Avatar</th>
+            <th scope="col">User name</th>
+            <th scope="col">Match</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each users}}
+            <tr class="table-active">
+              <td><picture><img
+                    src="{{avatarUrl}}"
+                    alt="{{username}}'s avatar"
+                  /></picture></td>
+              <th scope="row">{{username}}</th>
+              <td>{{match.numOfMatches}}/{{match.numOfuserBTracks}}</td>
+            </tr>
+          {{/each}}
+
+        </tbody>
+      </table>
+
+    </div>
+    <!-- colonne de droite -->
   </div>
+  <!-- fin container -->
 
-</div>
+</section>
 
 <script src="../js/allGroupsClickEvent.js"></script>

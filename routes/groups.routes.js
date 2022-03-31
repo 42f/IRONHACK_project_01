@@ -90,22 +90,31 @@ router.post("/create", async (req, res, next) => {
 
 // D I S P L A Y  A  G R O U P
 router.get("/:id", async (req, res, next) => {
-  // 1. Récuperer le groupe
-  const group = await Group.findById(req.params.id).populate(
-    "owner participants"
-  );
-  // 2. Récupérer la playlist du groupe
-  const groupPlaylist = await group.getCommonGroupTracks();
-  // group.getCommonGroupTracks();
-  console.log("GROUP PLAYLIST :", groupPlaylist);
+  try {
+    // 1. Récuperer le groupe
+    const group = await Group.findById(req.params.id).populate(
+      "owner participants"
+      );
+      // 2. Récupérer la playlist du groupe
+      const groupPlaylist = await group.getCommonGroupTracks();
+      // group.getCommonGroupTracks();
+      console.log("GROUP PLAYLIST :", groupPlaylist);
+      
+      const match = groupPlaylist.length; 
+      // await group.getGroupMatch();
+      // const match = await group.getGroupMatch();
 
-  const match = await group.getGroupMatch();
-
-  res.render("./groups/showOneGroup", {
-    group,
-    match,
-    tracklist: groupPlaylist,
-  });
+      const groupLen = (group.participants.length + 1);
+      res.render("./groups/showOneGroup", {
+        group,
+        groupLen,
+        match,
+        tracklist: groupPlaylist,
+      });
+    } catch(error) {
+      console.error(error)
+      res.send('error...')
+    }
 });
 
 router.get("/:id/edit", async (req, res, next) => {
