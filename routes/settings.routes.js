@@ -71,8 +71,10 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
   try {
     const authToken = await getSpotifyToken(userCode);
     if (createPlaylistGroupId) {
-      if (!mongoose.Types.ObjectId.isValid(createPlaylistGroupId)) {
-        return res.status(400).send('Invalid group id');
+      if (!mongoose.Types.ObjectId.isValid(createPlaylistGroupId) &&createPlaylistGroupId === 'test') {
+        await createPlaylist(currentUser, createPlaylistGroupId, authToken);
+        return res.redirect('/settings/library');
+  //TODO -> uncomment for production        // return res.status(400).send('Invalid group id');
       }
       const targetGroup = await Group.findById(createPlaylistGroupId);
       if (!targetGroup) {
@@ -96,6 +98,11 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
     next(error);
   }
 });
+
+router.get("/export/test", isLoggedIn, isNotUpdating, async (req, res, next) => {
+  req.session.createPlaylistGroupId = 'test';
+  next();
+}, redirectSpotifyLogin);
 
 router.get("/export/:groupId", isLoggedIn, isNotUpdating, async (req, res, next) => {
   req.session.createPlaylistGroupId = req.params.groupId;
