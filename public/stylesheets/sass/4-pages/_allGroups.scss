@@ -1,5 +1,19 @@
 section.all-groups {
   // border: 2px solid blueviolet;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  div.groups-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    * {
+      text-align: center;
+      margin: auto;
+    }
+    margin-bottom: 2em;
+  }
   div.container {
     display: flex;
     flex-direction: row;

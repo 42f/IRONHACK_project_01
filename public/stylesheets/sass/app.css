@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .wrap-resp {
   max-width: 1280px;
   width: 100%;
@@ -5,6 +6,22 @@
   padding: 0 2vw;
 }
 
+section.all-groups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+section.all-groups div.groups-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2em;
+}
+section.all-groups div.groups-header *   {
+  text-align: center;
+  margin: auto;
+}
 section.all-groups div.container {
   display: flex;
   flex-direction: row;

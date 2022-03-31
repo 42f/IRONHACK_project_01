@@ -1,12 +1,15 @@
 <section class="all-groups section">
   <div class="groups-header">
     {{#if allMygroups}}
-    <h2>You are part of {{allMygroups.length}} groups</h2>
+    <h1>You are part of {{allMygroups.length}} groups</h1>
     {{else}}
     <p> There are {{users.length}} users, make groups to share and enjoy music</p>
     
     {{/if}}
-    <a href="/groups/create"><button class="btn">CREATE A NEW GROUP</button></a>
+    <div class="create-group">
+
+    <a href="/groups/create" class="btn">CREATE A NEW GROUP</a>
+    </div>
 
   </div>
   <div class="container">
@@ -26,8 +29,8 @@
         <tbody>
           {{#if myOwnGroups}}
             {{#each myOwnGroups}}
-              <tr class="table-active" data-groupId="{{this._id}}">
-                <div class="table-active">
+              <tr class="" data-groupId="{{this._id}}">
+                <div class="">
                   <td><picture><img
                         src="{{owner.avatarUrl}}"
                         alt="{{owner.username}}'s avatar..."
