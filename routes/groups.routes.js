@@ -1,6 +1,6 @@
-const async = require("hbs/lib/async");
 const isLoggedIn = require("../middleware/isLoggedIn");
 const Group = require("../models/Group.model");
+const Link = require("../models/Link.model");
 const User = require("../models/User.model");
 // const Link = require('../models/Link.model');
 
@@ -8,74 +8,139 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   // console.log('REQUETE.USER: ',req.user);
-const meUser = req.user
+  const meUser = req.user;
 
   // 1. Get All My Groups as owner and participants
   const allMyGroups = await Group.find({
     $or: [{ owner: req.user._id }, { participants: req.user._id }],
   }).populate("owner participants");
 
-  // console.log('ALL MY GROUPS', allMyGroups.map(
-  //   group=>{
-  //     return {ower: group.owner, part:  JSON.stringify(group.participants)}
-  //   }
-  // ));
-
   // 2. Get All Users
-  let allUsers = await User.find(); //condition = userid != currentUser._id
+  let allUsers = await User.find({ _id: { $ne: meUser._id } });
 
   // 3. Get current user matches with others
   for (let i = 0; i < allUsers.length; i++) {
     const targetUser = allUsers[i];
-    targetUser['match'] = await meUser.getCompatibility(targetUser)
+    targetUser["match"] = await meUser.getCompatibility(targetUser);
   }
   // 4. Sort users by matches
-  allUsers = allUsers.sort((userA, userB) => 
-    userB.match.numOfMatches - userA.match.numOfMatches
+  allUsers = allUsers.sort(
+    (userA, userB) => userB.match.numOfMatches - userA.match.numOfMatches
   );
- 
-  // console.log('--ALL MATCHES--', allUsers.map(user => { return {...user.match}}));
-  // console.log('ALL MY GROUPS: ',allMyGroups);
 
-  // 5. GET MATCHES FOR MY GROUPS
-  const group = Group.findById('62441ae22549882842c7b751')
-  // const cumulPlaylist =  group.getCumulativePlaylist('62441ae22549882842c7b751')
-  console.log('Playlist: ', group.owner);
+  // 5. Send allMyGroups to method getGroupMatch
+  for (let i = 0; i < allMyGroups.length; i++) {
+    const targetGroup = allMyGroups[i];
+    targetGroup["match"] = await allMyGroups[i].getGroupMatch();
+  }
 
-  // console.log('Playlist: ',cumulPlaylist);
+  // 6. EXTRACT GROUPS WHERE IM OWN
+  // 7. EXTRACT GROUPS WHERE IM PARTICIPANTS
+  let myOwnGroups = [];
+  let myOtherGroups = [];
+  allMyGroups.forEach((group) => {
+    console.log(group.owner._id, req.user._id);
+    if (group.owner._id.toString() === req.user._id.toString()) {
+      myOwnGroups.push(group);
+      console.log("PUUUSHH OWNER");
+    } else {
+      myOtherGroups.push(group);
+    }
+  });
 
+  // 8. Rendre la vue
+  res.render("groups/allGroups", {
+    users: allUsers,
+    myOwnGroups,
+    myOtherGroups,
+  });
+});
+
+// C R E A T E  F O R M
+router.get("/create", async (req, res, next) => {
+
+  const groupOwner = req.user
+
+// Get All Users
+  let allUsers = await User.find({ _id: { $ne: groupOwner._id } });
+
+// 3. Get current user matches with others
+for (let i = 0; i < allUsers.length; i++) {
+  const targetUser = allUsers[i];
+  targetUser["match"] = await groupOwner.getCompatibility(targetUser);
+}
 
   
-  // Rendre la vue
-  res.render("groups/allGroups", {users: allUsers, allMyGroups });
+
+  res.render("groups/createGroup", {users:allUsers, groupOwner});
 });
 
-router.get("/create", (req, res, next) => {
-  res.render("groups/createGroup");
-});
-router.post("/create", (req, res, next) => {
-  res.render("groups/createGroup");
+router.post("/create", async (req, res, next) => {
+
+  const groupToCreate = req.body
+  const createdGroup = await Group.create(groupToCreate)
+  
+  const newGroupId = createdGroup._id.toString()
+
+  console.log(createdGroup, 'FORM DATA');
+  // res.send('envoi form')
+  res.redirect(`/groups/${newGroupId}`);
 });
 
 
+// D I S P L A Y  A  G R O U P
 router.get("/:id", async (req, res, next) => {
+  // 1. Récuperer le groupe
+  const group = await Group.findById(req.params.id).populate(
+    "owner participants"
+  );
+  // 2. Récupérer la playlist du groupe
+  const groupPlaylist = await group.getCommonGroupTracks();
+  // group.getCommonGroupTracks();
+  console.log("GROUP PLAYLIST :", groupPlaylist);
 
-  console.log('PARMAS',req.params.id);
-  const group = await Group.findById(req.params.id)
-  .populate('owner participants')
-  // group.getCumulativePlaylist();
+  const match = await group.getGroupMatch();
 
-  console.log('LE GROUPE: ', group);
-  res.render('./groups/showOneGroup', {group})
+  res.render("./groups/showOneGroup", {
+    group,
+    match,
+    tracklist: groupPlaylist,
+  });
 });
 
+router.get("/:id/edit", async (req, res, next) => {
+  const groupOwner = req.user;
+  // 1. Get All Users
+  let allUsers = await User.find({ _id: { $ne: groupOwner._id } });
+  // 2. Get group playlist
+  const group = await Group.findById(req.params.id).populate(
+    "owner participants"
+  );
 
-router.get("/:id/edit", (req, res, next) => {
-  res.render("groups/editOneGroup");
+  // 5. Set allUsers checked status and getMatchUserWithGroup
+  for (let i = 0; i < allUsers.length; i++) {
+    const targetUser = allUsers[i];
+    targetUser["matchGroup"] = await group.getMatchUserWithGroup(targetUser);
+    targetUser["matchGroup"]["pourcentage"] = (
+      (targetUser["matchGroup"]["numOfMatches"] /
+        targetUser["matchGroup"]["numOfGroupTracks"]) *
+      100
+    ).toFixed(0);
+    // console.log(("USER WITH GROUP MATCH:", targetUser['matchGroup']));
+
+    targetUser["isChecked"] = await group.getUsersWithCheckedStatus(targetUser);
+  }
+  allUsers.forEach((user) => {
+    console.log(user.userName, user["isChecked"]);
+  });
+
+  // console.log(allUsers, 'users');
+  res.render("groups/editOneGroup", { users: allUsers, group });
 });
 
 router.post("/:id/edit", (req, res, next) => {
-  res.redirect("/:id");
+  res.send("ok");
+  // res.redirect("/:id");
 });
 
 router.post("/:id/delete", (req, res, next) => {

@@ -12024,7 +12024,7 @@ fieldset:disabled .btn {
   filter: none;
 }
 
-.form-check-input:checked {
+.form-check-input[checked="true"] {
   background-color: #378dfc;
   box-shadow: inset 1px 1px 7px rgba(0, 0, 0, 0.2);
 }
