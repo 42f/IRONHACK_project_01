@@ -90,22 +90,31 @@ router.get("/:id/edit", async (req, res, next) => {
   const group = await Group.findById(req.params.id).populate(
     "owner participants"
   );
-  // const groupPlaylist = await group.getCommonGroupTracks();
 
-  // 5. Send allUsers to method getMatchUserWithGroup
+  // 5. Set allUsers checked status and getMatchUserWithGroup
   for (let i = 0; i < allUsers.length; i++) {
     const targetUser = allUsers[i];
     targetUser["matchGroup"] = await group.getMatchUserWithGroup(targetUser);
-    targetUser['matchGroup']['pourcentage'] = ((targetUser['matchGroup']['numOfMatches']/targetUser['matchGroup']['numOfGroupTracks'])*100.).toFixed(0)
+    targetUser["matchGroup"]["pourcentage"] = (
+      (targetUser["matchGroup"]["numOfMatches"] /
+        targetUser["matchGroup"]["numOfGroupTracks"]) *
+      100
+    ).toFixed(0);
     // console.log(("USER WITH GROUP MATCH:", targetUser['matchGroup']));
-  }
 
-  console.log(allUsers.avatarUrl);
-  res.render("groups/editOneGroup", {users: allUsers, group});
+    targetUser["isChecked"] = await group.getUsersWithCheckedStatus(targetUser);
+  }
+  allUsers.forEach((user) => {
+    console.log(user.userName, user["isChecked"]);
+  });
+
+  // console.log(allUsers, 'users');
+  res.render("groups/editOneGroup", { users: allUsers, group });
 });
 
 router.post("/:id/edit", (req, res, next) => {
-  res.redirect("/:id");
+  res.send("ok");
+  // res.redirect("/:id");
 });
 
 router.post("/:id/delete", (req, res, next) => {

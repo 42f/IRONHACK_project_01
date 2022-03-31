@@ -1,31 +1,87 @@
 <h1>Here you can edit your group : {{group.name}}</h1>
 
-<div class="container">
-  <div class="allUsers">
-    <table id="editGroup">
-      <tbody>
-        {{#each users}}
-          <tr class="table-active">
-            <td><picture><img
-                  src='{{this.avatarUrl}}' 
-                  alt="{{this.userName}}'s avatar"
-                /></picture></td>
-            <th scope="row">{{userName}}</th>
-            <td>{{this.matchGroup.pourcentage}}%
-                <p>Match with this group</p>
-            </td>
-            
-               
-            <td data-groupId="{{this._id}}"><button class="trash-button"><img src="/images/trash.png" alt="remove"></button></td>
-            
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+<div class="form-container">
+
+  <div class="form left">
+    <form action="/groups/{{group._id}}/edit" method="post" id="edit-group">
+
+      <div class="form-group">
+        <label class="form-label mt-4">Edit Group Name</label>
+
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="write a groupe name"
+            aria-label="write a groupe name"
+            aria-describedby="button-addon2"
+          />
+          <button
+            class="btn btn-primary"
+            type="button"
+            id="button-addon2"
+          >Edit</button>
+        </div>
+      </div>
+      <div class="buttons">
+
+        <button type="submit" class="btn btn-primary">Confirm changes</button>
+        <br />
+
+      </div>
+    </form>
+    <form action="/groups/{{group._id}}/edit" method="post" id="delete-form">
+      <div class="button">
+
+        <button form="delete-form" type="submit" class="btn btn-primary">Delete
+          group</button>
+      </div>
+    </form>
   </div>
-  <div class="form">
+  <div class="user-list right">
+    <fieldset>
+      <legend class="mt-4">Add / Remove Users</legend>
+      {{#each users}}
+          <div class="form-check form-switch">
+            <input
+              form="edit-group"
+              class="form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckDefault"
+        {{#if this.isChecked}}
+              checked
+        {{/if}}
+            />
+            <label
+              class="form-check-label user-row"
+              for="flexSwitchCheckDefault"
+            >
+              <div class="user">
+                <div class="username">{{userName}}</div>
+                <img
+                  class="avatar"
+                  src="{{avatarUrl}}"
+                  alt="{{userName}}'s avatar"
+                />
+                <div class="group-match">{{matchGroup.pourcentage}}%</div>
+              </div>
+            </label>
+          </div>
+        {{!-- {{else}}
+          <div class="form-check form-switch">
+            <input
+              form="edit-group"
+              class="form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckChecked"
+              checked=""
+            />
+            <label class="form-check-label" for="flexSwitchCheckChecked">Checked
+              switch checkbox input</label>
+          </div> --}}
+      {{/each}}
+    </fieldset>
 
   </div>
+
 </div>
-{{!-- <script src="../../js/editOneGroupClickEvent"></script> --}}
-{{!-- <script src="../js/allGroupsClickEvent.js"></script> --}}

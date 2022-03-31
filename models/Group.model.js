@@ -101,6 +101,20 @@ groupSchema.methods.getMatchUserWithGroup = async function (user) {
   return match;
 };
 
+groupSchema.methods.getUsersWithCheckedStatus =
+async function (user) {
+  
+  return this.participants.some(p => p._id.toString() === user._id.toString())
+  // console.log(this.participants, 'PARTICIPANT MODEL');
+  // let status = 
+  // this.participants.forEach(participant=>{
+  //   if(participant._id.toString() === user._id.toString()){
+  //     isChecked['checked']=1;
+  //   }
+  // })
+  // return isChecked
+}
+
 const Group = model("Group", groupSchema);
 
 module.exports = Group;
