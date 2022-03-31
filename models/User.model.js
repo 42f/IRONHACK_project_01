@@ -14,6 +14,7 @@ const userSchema = new Schema(
     username: { type: String, unique: true, required: true },
     avatarUrl: String,
     password: String,
+    libraryUpdateInProgress: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -28,7 +29,7 @@ userSchema.methods.getLibrary; ->
 userSchema.methods.getLinks = async function () {
   try {
     return await Link
-      .find({ userId: this._id }, null, { sort: {'updatedAt': -1 }})
+      .find({ userId: this._id }, null, { sort: { 'updatedAt': -1 } })
       .populate("trackId");
   } catch (err) {
     console.log(err);
@@ -45,7 +46,7 @@ userSchema.methods.getLibrary = function () {
     });
 };
 
-userSchema.methods.getCompatibility = async function(userB){
+userSchema.methods.getCompatibility = async function (userB) {
 
   const myLibrary = await this.getLibrary()
   // console.log('MY LIB', myLibrary)
@@ -53,17 +54,17 @@ userSchema.methods.getCompatibility = async function(userB){
   const userBLibrary = await userB.getLibrary()
   // console.log('userBLibrary LIB', userBLibrary)
   const match = {
-    numOfMatches:0,
-    numOfuserBTracks:userBLibrary.length
+    numOfMatches: 0,
+    numOfuserBTracks: userBLibrary.length
   }
 
   // console.log('USER B LIBRARY: ', userBLibrary);
   // console.log('___________--------______');
 
   myLibrary.forEach(myTrack => {
-    if(userBLibrary.some(track => {
+    if (userBLibrary.some(track => {
       return track._id.toString() === myTrack._id.toString();
-    })){
+    })) {
       match.numOfMatches++;
     }
   });
@@ -73,6 +74,12 @@ userSchema.methods.getCompatibility = async function(userB){
   return match;
 }
 
+userSchema.methods.setUpdatingStatus = async function (status) {
+  if (typeof status === 'boolean') {
+    this.libraryUpdateInProgress = status;
+    await this.save();
+  }
+}
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
   const match = await bcrypt.compare(candidatePassword, this.password);
