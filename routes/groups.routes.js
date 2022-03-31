@@ -30,8 +30,7 @@ router.get("/", async (req, res, next) => {
 
   // 5. Send allMyGroups to method getGroupMatch
   for (let i = 0; i < allMyGroups.length; i++) {
-    const targetGroup = allMyGroups[i];
-    targetGroup["match"] = await allMyGroups[i].getGroupMatch();
+    allMyGroups[i].match = await allMyGroups[i].getGroupMatch();
   }
 
   // 6. EXTRACT GROUPS WHERE IM OWN
@@ -39,10 +38,10 @@ router.get("/", async (req, res, next) => {
   let myOwnGroups = [];
   let myOtherGroups = [];
   allMyGroups.forEach((group) => {
-    console.log(group.owner._id, req.user._id);
+    // console.log(group.owner._id, req.user._id);
     if (group.owner._id.toString() === req.user._id.toString()) {
       myOwnGroups.push(group);
-      console.log("PUUUSHH OWNER");
+      // console.log("PUUUSHH OWNER");
     } else {
       myOtherGroups.push(group);
     }
@@ -70,7 +69,7 @@ for (let i = 0; i < allUsers.length; i++) {
   targetUser["match"] = await groupOwner.getCompatibility(targetUser);
 }
 
-  
+
 
   res.render("groups/createGroup", {users:allUsers, groupOwner});
 });
@@ -79,10 +78,10 @@ router.post("/create", async (req, res, next) => {
 
   const groupToCreate = req.body
   const createdGroup = await Group.create(groupToCreate)
-  
+
   const newGroupId = createdGroup._id.toString()
 
-  console.log(createdGroup, 'FORM DATA');
+  // console.log(createdGroup, 'FORM DATA');
   // res.send('envoi form')
   res.redirect(`/groups/${newGroupId}`);
 });
@@ -98,9 +97,9 @@ router.get("/:id", async (req, res, next) => {
       // 2. Récupérer la playlist du groupe
       const groupPlaylist = await group.getCommonGroupTracks();
       // group.getCommonGroupTracks();
-      console.log("GROUP PLAYLIST :", groupPlaylist);
-      
-      const match = groupPlaylist.length; 
+      // console.log("GROUP PLAYLIST :", groupPlaylist);
+
+      const match = groupPlaylist.length;
       // await group.getGroupMatch();
       // const match = await group.getGroupMatch();
 
@@ -139,9 +138,9 @@ router.get("/:id/edit", async (req, res, next) => {
 
     targetUser["isChecked"] = await group.getUsersWithCheckedStatus(targetUser);
   }
-  allUsers.forEach((user) => {
-    console.log(user.userName, user["isChecked"]);
-  });
+  // allUsers.forEach((user) => {
+  //   console.log(user.userName, user["isChecked"]);
+  // });
 
   // console.log(allUsers, 'users');
   res.render("groups/editOneGroup", { users: allUsers, group });
