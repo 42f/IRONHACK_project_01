@@ -1,1 +1,73 @@
 <h1>Create A Group</h1>
+
+<div class="container">
+
+  <div class="right users-list">
+    <fieldset id="users-list">
+      <legend class="mt-4">Add / Remove Users To Group</legend>
+      {{#each users}}
+        <div class="form-check form-switch row-user" data-userID="{{_id}}">
+          <input
+            form="create-group"
+            class="form-check-input"
+            type="checkbox"
+            name="participants"
+            value="{{_id}}"
+            id="{{_id}}"
+          />
+          <label class="form-check-label user-row" for="{{_id}}">
+            <div class="user">
+              <div class="username">{{username}}</div>
+              <img
+                class="avatar"
+                src="{{avatarUrl}}"
+                alt="{{userName}}'s avatar"
+              />
+              <div
+                class="group-match"
+              >{{match.numOfMatches}}/{{match.numOfuserBTracks}}</div>
+            </div>
+          </label>
+
+        </div>
+      {{/each}}
+    </fieldset>
+  </div>
+  <div class="left form">
+
+    <form action="/groups/create" method="post" id="create-group">
+        <div class="form-check form-switch">
+
+
+      <div class="form-group">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="group-name"
+            for="group-name"
+            name="name"
+            placeholder="my super team"
+            require
+          />
+          <label for="group-name">Group Name</label>
+          <input
+            type="hidden"
+            class="form-control"
+            id="group-owner"
+            for="group-owner"
+            name="owner"
+            value="{{groupOwner._id}}"
+
+          />
+
+        <button type="submit" class="btn btn-primary">Create Group</button>
+
+        </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/form-add-remove-user.js"> </script>

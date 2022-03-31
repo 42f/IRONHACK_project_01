@@ -56,13 +56,39 @@ router.get("/", async (req, res, next) => {
   });
 });
 
-router.get("/create", (req, res, next) => {
-  res.render("groups/createGroup");
-});
-router.post("/create", (req, res, next) => {
-  res.render("groups/createGroup");
+// C R E A T E  F O R M
+router.get("/create", async (req, res, next) => {
+
+  const groupOwner = req.user
+
+// Get All Users
+  let allUsers = await User.find({ _id: { $ne: groupOwner._id } });
+
+// 3. Get current user matches with others
+for (let i = 0; i < allUsers.length; i++) {
+  const targetUser = allUsers[i];
+  targetUser["match"] = await groupOwner.getCompatibility(targetUser);
+}
+
+  
+
+  res.render("groups/createGroup", {users:allUsers, groupOwner});
 });
 
+router.post("/create", async (req, res, next) => {
+
+  const groupToCreate = req.body
+  const createdGroup = await Group.create(groupToCreate)
+  
+  const newGroupId = createdGroup._id.toString()
+
+  console.log(createdGroup, 'FORM DATA');
+  // res.send('envoi form')
+  res.redirect(`/groups/${newGroupId}`);
+});
+
+
+// D I S P L A Y  A  G R O U P
 router.get("/:id", async (req, res, next) => {
   // 1. Récuperer le groupe
   const group = await Group.findById(req.params.id).populate(
@@ -83,9 +109,9 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.get("/:id/edit", async (req, res, next) => {
-  const meUser = req.user;
+  const groupOwner = req.user;
   // 1. Get All Users
-  let allUsers = await User.find({ _id: { $ne: meUser._id } });
+  let allUsers = await User.find({ _id: { $ne: groupOwner._id } });
   // 2. Get group playlist
   const group = await Group.findById(req.params.id).populate(
     "owner participants"
