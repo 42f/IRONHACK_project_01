@@ -1,8 +1,14 @@
-<h1>Matches</h1>
-
-<h2>Users : {{users.length}} | Your group(s) : {{allMyGroups.length}}</h2>
-
 <section class="all-groups section">
+  <div class="groups-header">
+    {{#if allMygroups}}
+    <h2>You are part of {{allMygroups.length}} groups</h2>
+    {{else}}
+    <p> There are {{users.length}} users, make groups to share and enjoy music</p>
+    
+    {{/if}}
+    <a href="/groups/create"><button class="btn">CREATE A NEW GROUP</button></a>
+
+  </div>
   <div class="container">
     <div class="left my-groups column">
       <table class="table table-hover myGroups" id="myGroups">
@@ -61,7 +67,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th colspan="3">ALL USERS</th>
+            <th colspan="3">ALL USERS ({{users.length}})</th>
 
           </tr>
           <tr>
