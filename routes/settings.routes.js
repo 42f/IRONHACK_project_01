@@ -84,7 +84,7 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
           return res.status(400).send('Could not find group');
         }
         await exportPlaylist(currentUser, targetGroup, authToken);
-        return res.render('settings/success-export');
+        return res.redirect('/groups');
       }
     } else {
       await currentUser.setUpdatingStatus(true);

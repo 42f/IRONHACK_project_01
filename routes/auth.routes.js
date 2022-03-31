@@ -106,6 +106,7 @@ router.post("/signup", isLoggedOut, (req, res) => {
         return User.create({
           username,
           email,
+          avatarUrl: `https://avatars.dicebear.com/api/adventurer/${username}.svg`,
           password: hashedPassword,
         });
       })

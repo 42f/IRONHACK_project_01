@@ -1,0 +1,9 @@
+
+.wrap-resp{
+    // donner une largeur maximale, permet de ne pas toucher aux marges body et de ne pas rétrécir le contenu trop vite
+    max-width: 1280px;
+    width : 100%;
+    margin : 0 auto;
+    padding : 0 2vw;  // un padding pour avoir des petites marges sur mobile quand même
+    // border: 2px solid blue;
+}

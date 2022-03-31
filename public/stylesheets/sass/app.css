@@ -1,0 +1,54 @@
+.wrap-resp {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2vw;
+}
+
+section.all-groups div.container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+section.all-groups div.container .column {
+  flex: 1;
+  width: 100%;
+  height: 70vh;
+  overflow-y: scroll;
+}
+section.all-groups div.container .column .table {
+  max-height: 70vh;
+  border: 1px solid green;
+}
+section.all-groups div.container .column .table thead tr:first-of-type() {
+  background-color: #212529;
+}
+section.all-groups div.container .column .table thead tr th {
+  text-align: center;
+}
+section.all-groups div.container .column .table tbody {
+  height: 70vh;
+  overflow-y: scroll;
+}
+section.all-groups div.container .column .table tbody tr {
+  min-height: 5em;
+  max-height: 7em;
+}
+
+section.section div.main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+section.section div.main .row {
+  border: 2px solid pink;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+section.section div.main .row .group-stats {
+  display: flex;
+  flex-direction: row;
+}
+
+/*# sourceMappingURL=app.css.map */

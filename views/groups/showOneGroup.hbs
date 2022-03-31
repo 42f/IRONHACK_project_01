@@ -1,95 +1,120 @@
-<h1>{{group.name}} | {{group.participants.length}} members</h1>
+<section class="section">
+  <div class="container main">
+    <div class="group-infos group-header container row">
 
-<h2>un groupe de {{group.owner.userName}}</h2>
+      <div class="group-stats container">
+        <div class="title">
+            <h1>{{group.name}}</h1>
+        </div>
+        <div class="stats">
+          <p>{{groupLen}} members</p>
+          <p>Match songs: {{match}}</p>
+        </div>
+      </div> <!-- Group stats -->
 
-<section class="group-infos">
-  <div class="container">
-    <div class="stats">
-      <div class="stats">
-        {{match}}%
-      </div>
+      <div class="group-controls">
+          <div class="buttons">
+            <a href="{{group._id}}/edit" class="btn">EDIT GROUP</a>
+            <a href="{{group._id}}/delete" class="btn">DELETE GROUP</a>
+            <!-- Pop, are you sure ?-->
+        </div>
+      </div> <!-- group controls edit delete -->
+
+    </div> <!-- group header container -->
+
+    <div class="column-container row">
+
+      <div class="group-details left column"> <!-- Start left column -->
+
+        <div class="participants list">
+          <table class="table table-hover">
+            <tbody>
+              {{#each group.participants}}
+                <tr>
+                  <td>
+                    <picture>
+                      <img
+                        src="{{this.avatarUrl}}"
+                        alt="{{this.userName}}'s profil picture..."
+                      />
+                    </picture>
+                  </td>
+                  <td>{{userName}}</td>
+                  <td>{{match}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div> <!-- LEFT COLUMN -->
+
+      <div class="right container group-playlist">
+
+        <div class="playlist">
+          {{#if tracklist}}
+            <h3>
+              You have
+              <b></b>
+              songs in your library.
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Artwork</th>
+                  <th>Artist</th>
+                  <th>Title</th>
+                  <th>Length</th>
+                  <th>Album</th>
+                  <th>Year</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each tracklist}}
+                  <tr>
+                    <td>
+                      {{#if this.img}}
+                        <img
+                          class="library-artwork"
+                          src="{{this.img}}"
+                          alt="{{this.album}}"
+                        />
+                      {{else}}
+                        <img
+                          class="library-artwork"
+                          src="../images/default-artwork.png"
+                          alt="default artwork"
+                        />
+                      {{/if}}
+                    </td>
+                    <td>{{this.artist}}</td>
+                    <td>{{this.title}}</td>
+                    <td>{{this.duration}}</td>
+                    <td>{{this.album}}</td>
+                    <td>{{this.year}}</td>
+                    <td></td>
+                    <td><button class="trash-button"><img
+                          src="../images/trash.png"
+                          alt="remove"
+                        /></button></td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          {{else}}
+            <p>No tracks in library yet, try
+              <a href="/settings/import">importing some...</a></p>
+          {{/if}}
+
+        </div> <!-- container playlist -->
+        <div class="container playlist-controls">
+          <a href="/settings/export/{{group._id}}">
+          <button class="btn">EXPORT PLAYLIST</button>
+          </a>
+        </div>
+
+      </div> <!-- END RIGHT COLUMN CONTAINER -->
     </div>
-    <div class="group-details">
-      <div class="controls">
-        <a href="{{group._id}}/edit" class="btn">EDIT GROUP</a>
-        <a href="{{group._id}}/delete" class="btn">DELETE GROUP</a>
-        <!-- Pop, are you sure ?-->
-      </div>
-      <div class="participants">
-        <table>
-          <tbody>
-            {{#each group.participants}}
-              <tr>
-                <td>
-                  <picture>
-                    <img
-                      src="{{avatarUrl}}"
-                      alt="{{userName}}'s profil picture"
-                    />
-                  </picture>
-                </td>
-                <td>{{userName}}</td>
-                <td>{{match}}</td>
-              </tr>
-            {{/each}}
-          </tbody>
 
-        </table>
-
-      </div>
-    </div>
-  </div>
-</section>
-<section class="playlist">
-    <div class="container group-playlist">
-  {{#if tracklist}}
-    <h3>
-      You have
-      <b></b>
-      songs in your library.
-    </h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Artwork</th>
-          <th>Artist</th>
-          <th>Title</th>
-          <th>Length</th>
-          <th>Album</th>
-          <th>Year</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each tracklist}}
-          <tr>
-            <td>
-              {{#if trackId.img}}
-                <img class="library-artwork" src="{{trackId.img}}" alt="{{trackId.album}}">
-              {{else}}
-                <img class="library-artwork" src="../images/default-artwork.png" alt="default artwork" />
-              {{/if}}
-            </td>
-            <td>{{this.artist}}</td>
-            <td>{{this.title}}</td>
-            <td>{{trackId.duration}}</td>
-            <td>{{trackId.album}}</td>
-            <td>{{trackId.year}}</td>
-            <td></td>
-            <td><button class="trash-button"><img src="../images/trash.png" alt="remove"></button></td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  {{else}}
-    <p>No tracks in library yet, try
-      <a href="/settings/import">importing some...</a></p>
-  {{/if}}
-
-</div>
-<div class="wrap">
-    <button class="btn">PLAY</button>
-
-    <button class="btn">EXPORT PLAYLIST</button>
-</div>
+  </div> <!-- container -->
 </section>

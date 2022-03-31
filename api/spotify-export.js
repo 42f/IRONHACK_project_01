@@ -38,9 +38,32 @@ async function exportOwnTracks(currentUser, authToken) {
 		const playlistId = await createOnePlaylist(userSpotifyId, name, authToken);
 
 		if (playlistId) {
-			await	addTracksToPlaylist(playlistId, userLib, authToken);
+			await addTracksToPlaylist(playlistId, userLib, authToken);
 		} else {
 			throw new Error('failed to create a new playlist');
+		}
+	} catch (error) {
+		console.error('error', error);
+		throw new Error('failed to create a new playlist');
+	}
+}
+
+async function exportGroup(originGroup, authToken) {
+	try {
+		const groupTracksObject = await originGroup.getCommonGroupTracks();
+		const tracklist = Object.values(groupTracksObject).map(track => track?.importId?.spotifyUri);
+
+		if (tracklist?.length) {
+			const userSpotifyId = await getUserSpotifyId(authToken);
+			const name = `${originGroup?.name || 'GroupPlaylist'} 🎉 ${getFullDate()}`;
+			const playlistId = await createOnePlaylist(userSpotifyId, name, authToken);
+			if (playlistId) {
+				await addTracksToPlaylist(playlistId, tracklist, authToken);
+			} else {
+				throw new Error('failed to create a new playlist');
+			}
+		} else {
+			throw new Error('No tracks to export');
 		}
 	} catch (error) {
 		console.error('error', error);
@@ -52,6 +75,8 @@ async function exportPlaylist(currentUser, originGroup, authToken) {
 	try {
 		if (originGroup === 'ownTracks') {
 			return await exportOwnTracks(currentUser, authToken);
+		} else {
+			return await exportGroup(originGroup, authToken);
 		}
 	} catch (error) {
 		console.error(error);
