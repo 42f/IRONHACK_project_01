@@ -159,6 +159,7 @@ router.post("/login", isLoggedOut, async (req, res, next) => {
     }
     const isCorrectPassword = await bcrypt.compare(password, user.password);
     if (isCorrectPassword) {
+      await user.setUpdatingStatus(false);
       req.session.user = user;
       return res.redirect('/');
     } else {
@@ -172,7 +173,12 @@ router.post("/login", isLoggedOut, async (req, res, next) => {
   }
 });
 
-router.get("/logout", isLoggedIn, (req, res) => {
+router.get("/logout", isLoggedIn, async (req, res) => {
+  try {
+    await req.user.setUpdatingStatus(false);
+  } catch (error) {
+    console.log(error);
+  }
   req.session.destroy((err) => {
     if (err) {
       return res

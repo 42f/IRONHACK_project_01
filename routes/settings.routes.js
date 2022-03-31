@@ -1,8 +1,15 @@
-const { getSpotifyToken, importFromSpotify, redirectSpotifyLogin } = require('../api/spotify-calls');
-const { createPlaylist } = require('../api/spotify-create-playlist');
+const {
+  redirectSpotifyLogin,
+  getSpotifyToken,
+} = require('../api/spotify-api-calls');
+const { importFromSpotify } = require('../api/spotify-import');
+
+const mongoose = require('mongoose');
+const { createPlaylist } = require('../api/spotify-export');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
 
+const Group = require('../models/Group.model')
 const Track = require('../models/Track.model')
 const Link = require('../models/Link.model');
 const isNotUpdating = require('../middleware/isNotUpdating');
@@ -11,7 +18,7 @@ router.get("/", isLoggedIn, isNotUpdating, (req, res, next) => {
   res.render("settings/settings");
 });
 
-router.get("/import", isLoggedIn, (req, res, next) => {
+router.get("/import", isLoggedIn, isNotUpdating, (req, res, next) => {
   res.render("settings/import");
 });
 
@@ -26,7 +33,7 @@ router.get("/library", isLoggedIn, isNotUpdating, async (req, res, next) => {
 });
 
 // !! TODO change to post !
-router.get("/library/delete", isLoggedIn, async (req, res, next) => {
+router.get("/library/delete", isLoggedIn, isNotUpdating, async (req, res, next) => {
   try {
     await Link.deleteMany({ userId: req.user._id });
     res.redirect('/settings/library');
@@ -36,7 +43,7 @@ router.get("/library/delete", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.post("/library/create", isLoggedIn, (req, res, next) => {
+router.post("/library/create", isLoggedIn, isNotUpdating, (req, res, next) => {
   let { mySongs, myPlaylists, spotifyPlaylists } = req.body;
   mySongs = mySongs === 'on';
   myPlaylists = myPlaylists === 'on';
@@ -62,36 +69,36 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
   const storedState = req.session.state;
 
   try {
+    const authToken = await getSpotifyToken(userCode);
     if (createPlaylistGroupId) {
-
-      const authToken = await getSpotifyToken(userCode);
-      await createPlaylist(currentUser, authToken);
-      res.send('<h1>Create Playlist</h1>');
-
+      if (!mongoose.Types.ObjectId.isValid(createPlaylistGroupId)) {
+        return res.status(400).send('Invalid group id');
+      }
+      const targetGroup = await Group.findById(createPlaylistGroupId);
+      if (!targetGroup) {
+        return res.status(400).send('Could not find group');
+      }
+      await createPlaylist(currentUser, targetGroup, authToken);
+      return res.render('settings/success-export');
     } else {
-
       await currentUser.setUpdatingStatus(true);
-
       // check state in cookie, if ok clear it, if not redirect
       if (storedState !== receivedstate) {
         console.error('Not the right state');
         return res.status(400).send('wrong state');
       }
       delete req.session.state;
-
-      const authToken = await getSpotifyToken(userCode);
       await importFromSpotify(currentUser, req.session.userFormData, authToken)
       await currentUser.setUpdatingStatus(false);
-      res.redirect('/settings/library')
+      return res.redirect('/settings/library')
     }
   } catch (error) {
     next(error);
   }
-
 });
 
-router.get("/playlist/create", isLoggedIn, async (req, res, next) => {
-  req.session.createPlaylistGroupId = '42';
+router.get("/export/:groupId", isLoggedIn, isNotUpdating, async (req, res, next) => {
+  req.session.createPlaylistGroupId = req.params.groupId;
   next();
 }, redirectSpotifyLogin);
 
