@@ -1,4 +1,9 @@
 const {
+	fetchEndpoint,
+	getUserSpotifyId,
+} = require('./spotify-api-calls');
+
+const {
 	CLIENT_ID,
 	SPOTIFY_TOKEN_URL,
 	CLIENT_SECRET,
@@ -23,53 +28,6 @@ function fabricateRedirectUrl(state) {
 	url.searchParams.append('redirect_uri', REDIRECT_URL);
 	url.searchParams.append('state', state);
 	return url;
-}
-
-function redirectSpotifyLogin(req, res, next) {
-	const state = generateRandomString(32);
-	req.session.state = state;
-	const url = fabricateRedirectUrl(state)
-	res.redirect(url.href);
-}
-
-async function getSpotifyToken(userCode) {
-	const data = {
-		code: userCode,
-		redirect_uri: REDIRECT_URL,
-		grant_type: 'authorization_code'
-	};
-
-	const headers = {
-		'content-type': 'application/x-www-form-urlencoded',
-		'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
-	}
-
-	try {
-		const authResp = await axios({
-			method: 'POST',
-			headers,
-			data: qs.stringify(data),
-			url: SPOTIFY_TOKEN_URL,
-		});
-		return authResp.data.access_token;
-	} catch (error) {
-		return error.data;
-	}
-}
-
-async function fetchEndpoint(authToken, url) {
-	const headers = {
-		'Authorization': 'Bearer ' + authToken
-	}
-	const { status, data } = await axios({
-		method: 'GET',
-		headers,
-		url
-	});
-	if (status != 200) {
-		throw new Error(data);
-	}
-	return data;
 }
 
 async function insertLinks(currentUser, trackIds) {
@@ -148,16 +106,6 @@ function transformSpotifySongsInTracks(spotifySongs) {
 			}
 		}
 	});
-}
-
-async function getUserSpotifyId(authToken) {
-	let url = 'https://api.spotify.com/v1/me';
-	try {
-		const meData = await fetchEndpoint(authToken, url);
-		return meData.id;
-	} catch (err) {
-		console.error(err);
-	}
 }
 
 async function fetchSongsFromSpotify(url, authToken) {
@@ -261,7 +209,5 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 }
 
 module.exports = {
-	redirectSpotifyLogin,
 	importFromSpotify,
-	getSpotifyToken
 }

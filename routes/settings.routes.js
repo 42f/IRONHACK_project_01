@@ -1,5 +1,10 @@
-const { getSpotifyToken, importFromSpotify, redirectSpotifyLogin } = require('../api/spotify-calls');
-const { createPlaylist } = require('../api/spotify-create-playlist');
+const {
+  redirectSpotifyLogin,
+  getSpotifyToken,
+} = require('../api/spotify-api-calls');
+const { importFromSpotify } = require('../api/spotify-import');
+
+const { createPlaylist } = require('../api/spotify-export');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
 
