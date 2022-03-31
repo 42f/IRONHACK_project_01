@@ -11,6 +11,7 @@ const trackSchema = new Schema({
   img: String,
   importId: {
     spotifyId: String,
+    spotifyUri: String,
     appleId: String
   }
 });
