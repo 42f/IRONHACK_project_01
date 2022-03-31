@@ -74,6 +74,7 @@ async function fetchEndpoint(authToken, url) {
 
 async function postToEndpoint(authToken, url, sendData) {
 	const headers = {
+		'content-type': 'application/json',
 		'Authorization': 'Bearer ' + authToken
 	}
 	const { status, data } = await axios({
