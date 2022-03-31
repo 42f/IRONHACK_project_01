@@ -1,7 +1,8 @@
 const { getSpotifyToken, importFromSpotify, redirectSpotifyLogin } = require('../api/spotify-calls');
-const { convertMsToString } = require('../utils/convertMsToString')
+const { createPlaylist } = require('../api/spotify-create-playlist');
 const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
+
 const Track = require('../models/Track.model')
 const Link = require('../models/Link.model')
 
@@ -23,13 +24,24 @@ router.get("/library", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// !! TODO change to post !
+router.get("/library/delete", isLoggedIn, async (req, res, next) => {
+  try {
+    await Link.deleteMany({ userId: req.user._id });
+    res.redirect('/settings/library');
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.post("/library/create", isLoggedIn, (req, res, next) => {
   let { mySongs, myPlaylists, spotifyPlaylists } = req.body;
   mySongs = mySongs === 'on';
   myPlaylists = myPlaylists === 'on';
   spotifyPlaylists = spotifyPlaylists === 'on';
 
-  if (mySongs && myPlaylists && spotifyPlaylist) {
+  if (!mySongs && !myPlaylists && !spotifyPlaylists) {
     res.redirect('/settings/import')
   } else {
     req.session.userFormData = { mySongs, myPlaylists, spotifyPlaylists };
@@ -40,25 +52,39 @@ router.post("/library/create", isLoggedIn, (req, res, next) => {
 router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
   const currentUser = req.user;
+  console.log('CURRENT USERS', currentUser);
   const userCode = req.query.code;
   const receivedstate = req.query.state;
   const storedState = req.session.state;
-
-  // check state in cookie, if ok clear it, if not redirect
-  if (storedState !== receivedstate) {
-    console.error('Not the right state');
-    return res.status(400).send('wrong state');
-  }
-  delete req.session.state;
+  const createPlaylistGroupId = req.session?.createPlaylistGroupId;
 
   try {
-    const authToken = await getSpotifyToken(currentUser, userCode);
-    await importFromSpotify(req.user, req.session.userFormData, authToken)
-    res.redirect('/settings/library')
+    if (createPlaylistGroupId) {
+      const authToken = await getSpotifyToken(userCode);
+      console.log('CREATE PLAYLIST CALLBACK', createPlaylistGroupId);
+      await createPlaylist(currentUser, authToken);
+      res.send('<h1>Create Playlist</h1>');
+    } else {
+      // check state in cookie, if ok clear it, if not redirect
+      if (storedState !== receivedstate) {
+        console.error('Not the right state');
+        return res.status(400).send('wrong state');
+      }
+      delete req.session.state;
+
+      const authToken = await getSpotifyToken(userCode);
+      await importFromSpotify(currentUser, req.session.userFormData, authToken)
+      res.redirect('/settings/library')
+    }
   } catch (error) {
     next(error);
   }
 
 });
+
+router.get("/playlist/create", isLoggedIn, async (req, res, next) => {
+  req.session.createPlaylistGroupId = '42';
+  next();
+}, redirectSpotifyLogin);
 
 module.exports = router;

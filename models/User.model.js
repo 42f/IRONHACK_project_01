@@ -11,7 +11,7 @@ function avatarGen(username) {
 const userSchema = new Schema(
   {
     email: { type: String, unique: true, required: true },
-    userName: { type: String, unique: true, required: true },
+    username: { type: String, unique: true, required: true },
     avatarUrl: String,
     password: String,
   },
