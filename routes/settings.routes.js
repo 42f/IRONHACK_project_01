@@ -43,6 +43,17 @@ router.get("/library/delete", isLoggedIn, isNotUpdating, async (req, res, next) 
   }
 });
 
+router.delete("/library/:id/delete", isLoggedIn, isNotUpdating, async (req, res, next) => {
+  try {
+    await Link.findByIdAndDelete({ userId: req.user._id, _id: req.params.id });
+    const libraryContent = await Link.countDocuments({userId: req.user._id});
+    res.status(200).send(libraryContent.toString());
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.post("/library/create", isLoggedIn, isNotUpdating, (req, res, next) => {
   let { mySongs, myPlaylists, spotifyPlaylists } = req.body;
   mySongs = mySongs === 'on';
