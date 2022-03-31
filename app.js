@@ -24,7 +24,7 @@ require("./config")(app);
 const capitalized = require("./utils/capitalized");
 const projectName = "rooms-app";
 const User = require("./models/User.model");
-app.locals.appTitle = `${capitalized(projectName)} created with IronLauncher`;
+app.locals.appTitle = `Spotimatcher`;
 
 // Middlewares
 const isLoggedIn = require('./middleware/isLoggedIn');
