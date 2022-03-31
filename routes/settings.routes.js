@@ -4,9 +4,10 @@ const router = require("express").Router();
 const isLoggedIn = require('../middleware/isLoggedIn')
 
 const Track = require('../models/Track.model')
-const Link = require('../models/Link.model')
+const Link = require('../models/Link.model');
+const isNotUpdating = require('../middleware/isNotUpdating');
 
-router.get("/", isLoggedIn, (req, res, next) => {
+router.get("/", isLoggedIn, isNotUpdating, (req, res, next) => {
   res.render("settings/settings");
 });
 
@@ -14,7 +15,7 @@ router.get("/import", isLoggedIn, (req, res, next) => {
   res.render("settings/import");
 });
 
-router.get("/library", isLoggedIn, async (req, res, next) => {
+router.get("/library", isLoggedIn, isNotUpdating, async (req, res, next) => {
   try {
     const tracklist = await req.user?.getLinks();
     res.render("settings/library", { tracklist });
@@ -49,22 +50,28 @@ router.post("/library/create", isLoggedIn, (req, res, next) => {
   }
 }, redirectSpotifyLogin);
 
-router.get("/library/callback", isLoggedIn, async (req, res, next) => {
+router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next) => {
+  const createPlaylistGroupId = req.session?.createPlaylistGroupId;
+  if (createPlaylistGroupId) {
+    delete req.session.createPlaylistGroupId;
+  }
 
   const currentUser = req.user;
-  console.log('CURRENT USERS', currentUser);
   const userCode = req.query.code;
   const receivedstate = req.query.state;
   const storedState = req.session.state;
-  const createPlaylistGroupId = req.session?.createPlaylistGroupId;
 
   try {
     if (createPlaylistGroupId) {
+
       const authToken = await getSpotifyToken(userCode);
-      console.log('CREATE PLAYLIST CALLBACK', createPlaylistGroupId);
       await createPlaylist(currentUser, authToken);
       res.send('<h1>Create Playlist</h1>');
+
     } else {
+
+      await currentUser.setUpdatingStatus(true);
+
       // check state in cookie, if ok clear it, if not redirect
       if (storedState !== receivedstate) {
         console.error('Not the right state');
@@ -74,6 +81,7 @@ router.get("/library/callback", isLoggedIn, async (req, res, next) => {
 
       const authToken = await getSpotifyToken(userCode);
       await importFromSpotify(currentUser, req.session.userFormData, authToken)
+      await currentUser.setUpdatingStatus(false);
       res.redirect('/settings/library')
     }
   } catch (error) {
