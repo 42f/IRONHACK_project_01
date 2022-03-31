@@ -11,7 +11,7 @@ function avatarGen(username) {
 const userSchema = new Schema(
   {
     email: { type: String, unique: true, required: true },
-    userName: { type: String, unique: true, required: true },
+    username: { type: String, unique: true, required: true },
     avatarUrl: String,
     password: String,
   },
@@ -49,17 +49,17 @@ userSchema.methods.getCompatibility = async function(userB){
 
   const myLibrary = await this.getLibrary()
   // console.log('MY LIB', myLibrary)
-  
+
   const userBLibrary = await userB.getLibrary()
   // console.log('userBLibrary LIB', userBLibrary)
   const match = {
     numOfMatches:0,
     numOfuserBTracks:userBLibrary.length
   }
-  
+
   // console.log('USER B LIBRARY: ', userBLibrary);
   // console.log('___________--------______');
-  
+
   myLibrary.forEach(myTrack => {
     if(userBLibrary.some(track => {
       return track._id.toString() === myTrack._id.toString();

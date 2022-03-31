@@ -24,13 +24,13 @@ mongoose
 const starterUsers = [
   {
     email: "valette.brian@gmail.com",
-    userName: 'brian',
+    username: 'brian',
     avatarUrl: `https://avatars.dicebear.com/api/adventurer/brian.svg`,
     password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
   },
   {
     email: "gary.j@live.fr",
-    userName: 'gary',
+    username: 'gary',
     avatarUrl: `https://avatars.dicebear.com/api/adventurer/gary.svg`,
     password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
   },
@@ -40,11 +40,11 @@ const starterUsers = [
 function generateFakeUsers(quantity) {
   const users = starterUsers;
   for (let i = 0; i < quantity; i++) {
-    const userNameValue = faker.internet.userName();
+    const usernameValue = faker.internet.username();
     let user = {
       email: faker.internet.email(),
-      userName: userNameValue,
-      avatarUrl: `https://avatars.dicebear.com/api/adventurer/${userNameValue}.svg`,
+      username: usernameValue,
+      avatarUrl: `https://avatars.dicebear.com/api/adventurer/${usernameValue}.svg`,
       password: "password",
     };
     users.push(user);

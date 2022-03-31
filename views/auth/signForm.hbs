@@ -1,0 +1,16 @@
+<h2>{{formTitle}}</h2>
+<form action="{{routePost}}" method="post">
+	<p>{{> formTextField value='email' name='Email' required=true }}</p>
+	{{#if signUpForm}}
+		<p>{{> formTextField value='username' name='Username' required=true }}</p>
+	{{/if}}
+	<p>{{> formTextField value='password' name='Password' type='password' required=true }}</p>
+  <p>
+	<input type='submit' placeholder="0" value='{{formAction}}' />
+	</p>
+</form>
+
+
+{{#if error}}
+	<p>{{error}}</p>
+{{/if}}
