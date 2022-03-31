@@ -33,7 +33,7 @@ function fabricateRedirectUrl(state) {
 async function insertLinks(currentUser, trackIds) {
 	const userLinks = await currentUser.getLinks();
 	trackIds = trackIds.filter(id => {
-		return !userLinks.find(link => link.trackId._id.toString() === id.toString())
+		return !userLinks.find(link => link?.trackId?._id.toString() === id?.toString())
 	});
 	if (trackIds.length) {
 		const linksToInsert = trackIds.map(item => {
@@ -48,7 +48,6 @@ async function insertLinks(currentUser, trackIds) {
 
 async function getExistingTracks(candidateTracks) {
 	try {
-		const start = Date.now()
 		const existingTracks = await Track.find();
 		candidateTracks.forEach(item => {
 			const existingTrack = existingTracks.find(track => track.isrc === item.isrc);
@@ -69,6 +68,8 @@ async function insertTracks(candidateTracks) {
 	let tracksInDbIds = [];
 	try {
 		const { alreadyInsertedTracks, newTracksToInsert } = await getExistingTracks(candidateTracks);
+		// console.log('already inserted tracks: ', JSON.stringify(alreadyInsertedTracks.map(t => t._id)));
+		// console.log('new to insert tracks: ', JSON.stringify(newTracksToInsert.map(t => t._id)));
 
 		const insertedTracks = await Track.insertMany(newTracksToInsert, { ordered: false });
 
@@ -81,7 +82,8 @@ async function insertTracks(candidateTracks) {
 	} catch (error) {
 		console.error('ERROR CODE -> ', error.code)
 		if (error.code === 11000) {
-			console.error('--------DUPLICATED ERROR ', JSON.stringify(error, null, 4));
+			console.error('--------DUPLICATED ERROR ---------------------------------------');
+			// console.error('--------DUPLICATED ERROR ', JSON.stringify(error, null, 4));
 			tracksInDbIds = [];
 		} else {
 			console.error('ERROR -> ', error)
@@ -92,7 +94,7 @@ async function insertTracks(candidateTracks) {
 
 function transformSpotifySongsInTracks(spotifySongs) {
 	return spotifySongs.map(item => {
-		return {
+		const trackObject = {
 			isrc: item?.isrc || item?.external_ids?.isrc,
 			title: item?.title || item?.name,
 			artist: item?.artists?.map(artist => artist?.name) || item?.artist,
@@ -103,8 +105,12 @@ function transformSpotifySongsInTracks(spotifySongs) {
 			img: item?.img || item?.album?.images[0]?.url,
 			importId: {
 				spotifyId: item?.importId?.spotifyId || item?.id,
+				spotifyUri: item?.uri || `spotify:track:${item?.importId?.spotifyId || item?.id}`,
 			}
-		}
+		};
+		// console.log('ITERM BEFORE', item);
+		// console.log('trackObject output: ', trackObject);
+		return trackObject;
 	});
 }
 
@@ -199,7 +205,7 @@ async function importFromSpotify(currentUser, userFormData, authToken) {
 
 
 		const tracksAfterInsert = await insertTracks(tracksObjectToAdd);
-		if (tracksAfterInsert.length) {
+		if (tracksAfterInsert?.length) {
 			await insertLinks(currentUser, tracksAfterInsert);
 		}
 	} catch (error) {

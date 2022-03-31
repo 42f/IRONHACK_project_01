@@ -90,9 +90,9 @@ router.get("/library/callback", isLoggedIn, isNotUpdating, async (req, res, next
         return res.status(400).send('wrong state');
       }
       delete req.session.state;
+      res.redirect('/settings/library')
       await importFromSpotify(currentUser, req.session.userFormData, authToken)
       await currentUser.setUpdatingStatus(false);
-      return res.redirect('/settings/library')
     }
   } catch (error) {
     next(error);
