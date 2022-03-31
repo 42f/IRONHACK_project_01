@@ -66,9 +66,27 @@ async function fetchEndpoint(authToken, url) {
 		url
 	});
 	if (status != 200) {
+		console.error(`Got ${status} code from Spotify API.`);
 		throw new Error(data);
 	}
 	return data;
+}
+
+async function postToEndpoint(authToken, url, sendData) {
+	const headers = {
+		'Authorization': 'Bearer ' + authToken
+	}
+	const { status, data } = await axios({
+		method: 'POST',
+		headers,
+		url,
+		data: sendData
+	});
+	if (status != 200) {
+		console.error(`Got ${status} code from Spotify API.`);
+		// throw new Error(data);
+	}
+	return {status, data};
 }
 
 async function getUserSpotifyId(authToken) {
@@ -82,6 +100,7 @@ async function getUserSpotifyId(authToken) {
 }
 
 module.exports = {
+	postToEndpoint,
 	redirectSpotifyLogin,
 	getSpotifyToken,
 	fetchEndpoint,
