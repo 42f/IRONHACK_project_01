@@ -86,3 +86,61 @@ li {
   width: 50px;
   border-radius: 25%;
 }
+
+.form-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 70vh;
+  overflow-y: scroll;
+}
+.form-container .right{
+  padding-right: 20px;
+}
+img.avatar{
+  width: 100px;
+}
+div.form-check{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 5em;
+  max-height: 7em;
+}
+
+div.form-check > * {
+  
+}
+label .user{
+  display: flex;
+  flex-direction: row;
+  height: 10em;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}
+
+label .user > * {
+  flex: 1;
+
+}
+
+div.user .username{
+  max-width: 240px;
+  min-width: 150px;
+}
+
+div.buttons{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 80px;
+}
+
+
+form#delete-form{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
