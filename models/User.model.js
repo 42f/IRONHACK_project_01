@@ -31,7 +31,7 @@ userSchema.methods.getLinks = async function () {
     return (await Link
       .find({ userId: this._id }, null, { sort: { 'updatedAt': -1 } })
       .populate("trackId"))
-      .filter(link => link.trackId);
+      // .filter(link => link.trackId);
   } catch (err) {
     console.log(err);
     return [];
@@ -50,27 +50,20 @@ userSchema.methods.getLibrary = function () {
 userSchema.methods.getCompatibility = async function (userB) {
 
   const myLibrary = await this.getLibrary()
-  // console.log('MY LIB', myLibrary)
+  // console.log('MY LIB')
 
   const userBLibrary = await userB.getLibrary()
-  // console.log('userBLibrary LIB', userBLibrary)
+  // console.log('userBLibrary LIB')
   const match = {
     numOfMatches: 0,
     numOfuserBTracks: userBLibrary.length
   }
 
-  // console.log('USER B LIBRARY: ', userBLibrary);
-  // console.log('___________--------______');
-
+  const userBSet = new Set(userBLibrary.map(t => t.toString()));
+  let matchy = 0;
   myLibrary.forEach(myTrack => {
-    if (userBLibrary.some(track => {
-      return track._id.toString() === myTrack._id.toString();
-    })) {
-      match.numOfMatches++;
-    }
+    if (userBSet.has(myTrack.toString())) match.numOfMatches++;
   });
-
-  // console.log('match object ', match);
 
   return match;
 }
