@@ -31,7 +31,7 @@ userSchema.methods.getLinks = async function () {
     return (await Link
       .find({ userId: this._id }, null, { sort: { 'updatedAt': -1 } })
       .populate("trackId"))
-      // .filter(link => link.trackId);
+    // .filter(link => link.trackId);
   } catch (err) {
     console.log(err);
     return [];
@@ -49,22 +49,20 @@ userSchema.methods.getLibrary = function () {
 
 userSchema.methods.getCompatibility = async function (userB) {
 
-  const myLibrary = await this.getLibrary()
-  // console.log('MY LIB')
+  const ids = [this._id, userB._id];
 
-  const userBLibrary = await userB.getLibrary()
-  // console.log('userBLibrary LIB')
+  const commonLib = await Link.aggregate(
+    [
+      { $match: { userId: { $in: ids } } },
+      { $group: { _id: '$trackId', count: { $sum: 1 } } },
+      { $lookup: { from: 'tracks', localField: '_id', foreignField: '_id', as: 'trackId' } }
+    ]
+  );
+  const commonTracks = commonLib.filter(track => track.count > 1);
   const match = {
-    numOfMatches: 0,
-    numOfuserBTracks: userBLibrary.length
+    numOfMatches: commonTracks.length,
+    numOfuserBTracks: await Link.find({ userId: userB._id }).countDocuments()
   }
-
-  const userBSet = new Set(userBLibrary.map(t => t.toString()));
-  let matchy = 0;
-  myLibrary.forEach(myTrack => {
-    if (userBSet.has(myTrack.toString())) match.numOfMatches++;
-  });
-
   return match;
 }
 

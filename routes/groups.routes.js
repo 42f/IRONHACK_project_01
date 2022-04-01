@@ -39,7 +39,7 @@ router.get("/", async (req, res, next) => {
   let myOtherGroups = [];
   allMyGroups.forEach((group) => {
     // console.log(group.owner._id, req.user._id);
-    if (group.owner._id.toString() === req.user._id.toString()) {
+    if (group.owner?._id && group.owner?._id.toString() === req.user._id.toString()) {
       myOwnGroups.push(group);
       // console.log("PUUUSHH OWNER");
     } else {

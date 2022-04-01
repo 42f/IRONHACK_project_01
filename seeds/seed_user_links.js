@@ -31,50 +31,16 @@ function generateFakeUsers(quantity) {
       avatarUrl: `https://avatars.dicebear.com/api/adventurer/${usernameValue}.svg`,
       password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
     };
+    console.log('NEW USER', user.username, user.email);
     users.push(user);
   }
   return users;
 }
 
-// Generate groups
-
-function generateOneGroup(usersDB) {
-
-  const randomIndex = Math.floor(Math.random() * usersDB.length);
-  const group = {
-    name: faker.lorem.words(),
-    owner: usersDB.splice(randomIndex, 1)[0],
-    participants: [],
-  };
-
-  let randomLen = 2 + Math.floor(Math.random() * usersDB.length)
-  randomLen = randomLen > 5 ? 5 : randomLen;
-  for (let i = 0; i < randomLen; i++) {
-    const randomIndex = Math.floor(Math.random() * usersDB.length);
-    const newParticipant = usersDB.splice(randomIndex, 1)[0];
-    group.participants.push(newParticipant);
-  }
-
-  return group;
-}
-
-function generateAllGroups(quantity, userDb) {
-  const groups = [];
-  for (let i = 0; i < quantity; i++) {
-    const newGroup = generateOneGroup([...userDb]);
-    groups.push(newGroup);
-  }
-  return groups;
-}
-
-
-
 function generateFakeLinksForOneUser(quantity, fakeUser, existingTracksIds) {
   const Links = [];
-  quantity = quantity + Math.floor(Math.random() * 10);
-  console.log('fakeUser', fakeUser);
-  console.log('tracks', existingTracksIds.length);
-  for (let i = 0; i < quantity; i++) {
+  quantity = quantity + Math.floor(Math.random() * 50);
+  for (let i = 0; existingTracksIds.length && i < quantity; i++) {
     const randomIndex = Math.floor(Math.random() * existingTracksIds.length);
     const link = {
       userId: fakeUser._id,
@@ -88,16 +54,12 @@ function generateFakeLinksForOneUser(quantity, fakeUser, existingTracksIds) {
 async function generateFakeLinks(quantity, fakeUsers, existingTracksIds) {
   for (let i = 0; i < fakeUsers.length; i++) {
     const links = generateFakeLinksForOneUser(quantity, fakeUsers[i], [...existingTracksIds]);
-    console.log(links);
-    const linksDb = await Link.create(links);
-    console.log('links db', linksDb.map(l => `${l.userId} -- ${l.trackId}`));
+    await Link.create(links);
   }
 }
 
 async function deleteAllFakeLinksAndUsers() {
   const fakeUsersIds = (await User.find({ username: /\*$/ })).map(user => user._id);
-  const fakeLinks = await Link.find({ userId: { $in: fakeUsersIds}});
-  console.log('Fake links', fakeLinks);
   await Link.deleteMany({ userId: { $in: fakeUsersIds}});
   await User.deleteMany({ username: /\*$/ });
 }
@@ -105,18 +67,14 @@ async function deleteAllFakeLinksAndUsers() {
 // The script that will be run to actually seed the database (feel free to refer to the previous lesson)
 async function seedDB() {
   try {
+    await Group.deleteMany();
     const existingTracksIds = (await Track.find()).map(t => t._id);
-    console.log('tracks', existingTracksIds);
     await deleteAllFakeLinksAndUsers();
-    const fakeUsers = generateFakeUsers(5);
+    const fakeUsers = generateFakeUsers(12);
     const fakeUsersDb = await User.create(fakeUsers);
-
-    await generateFakeLinks(20, fakeUsersDb, existingTracksIds);
-
-    // console.log('ALL', (await User.find()).map(i => i.username))
-    // console.log('fake', (await User.find({ username: /\*$/ })).map(i => i.username))
-
+    await generateFakeLinks(30, fakeUsersDb, existingTracksIds);
   } catch (err) {
     console.log(`An error occurred while creating users from the DB: ${err}`);
   }
 }
+//
