@@ -36,23 +36,32 @@ section.all-groups {
             &:first-of-type() {
               background-color: $dark;
             }
-            th {
+            th,tr,td {
               text-align: center;
             }
           }
+          th{
+            width: calc(100%/3);
+          }
         }
         tbody {
+          // border: 2px solid red;
           height: 70vh;
 
           overflow-y: scroll;
-
-          tr {
-            // border: 2px solid black;
-            min-height: 5em;
-            max-height: 7em;
+          th,tr,td {
+            text-align: center;
           }
+
+        }
+        &#myGroups{
+          img{
+            width: 100%
+          }
+         
         }
       }
+
     }
   }
 }
