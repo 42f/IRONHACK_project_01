@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "seeds": "node ./seeds/seeds.js",
+    "seed": "node seeds/seed_user_links.js",
     "start": "node server.js",
     "dev": "nodemon -e js,hbs,css,html server.js"
   },
