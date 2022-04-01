@@ -1,7 +1,7 @@
 section.section {
   // border: 1px solid black;
   // overflow-y: scroll;
-  
+
   padding-top: 4em;
   div.main {
     // border: 2px solid blue;
@@ -20,9 +20,9 @@ section.section {
       justify-content: center;
       margin-bottom: 4em;
       height: max-content;
-      p{
+      p {
         text-align: center;
-    }
+      }
     }
     .group-stats {
       display: flex;
@@ -32,12 +32,10 @@ section.section {
       height: 10%;
     }
     .group-controls {
-       
       margin-top: 2em;
       width: 50%;
       height: max-content;
       .buttons {
-         
         a:first-of-type {
           width: 40%;
           margin: 1.3em auto;
@@ -52,8 +50,8 @@ section.section {
           margin: auto;
         }
         p {
-            padding-top: 0.5em;
-            text-align: center;
+          padding-top: 0.5em;
+          text-align: center;
         }
       }
     }
@@ -68,6 +66,10 @@ section.section {
         // border: 2px solid green;
         flex: 1;
         overflow-x: scroll;
+        border-right: 3px solid black;
+        border-image: linear-gradient(139deg, $purple, $pink) 3;
+        margin-right:1em
+       
       }
       div.right {
         // border: 2px solid rgb(94, 0, 128);
@@ -92,10 +94,11 @@ section.section {
       }
     }
   }
-  .vertical {
-    border-left: 6px solid black;
-    height: 200px;
-    position: absolute;
-    left: 50%;
-  }
+//   .vertical {
+//     border-left: 3px solid black;
+//     border-image: linear-gradient(139deg, $purple, $pink, $orange, $green) 3;
+//     height: 70vh;
+//     position: absolute;
+//     left: 50%;
+//   }
 }

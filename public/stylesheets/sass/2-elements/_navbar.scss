@@ -1,0 +1,12 @@
+nav.navbar{
+    width: 100%;
+    &:hover{
+        background : $gray-100;
+    }
+    a{
+        &:hover{
+            background : $gray-700;
+            color: white;
+        }
+    }
+}
