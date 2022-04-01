@@ -1,9 +1,9 @@
-<h1>Settings</h1>
+<h1>Library</h1>
 <div class="library">
   {{#if tracklist.length}}
     <h3>
       You have
-      <b>{{tracklist.length}}</b>
+      <span class="lib-count"><b>{{tracklist.length}}</b></span>
       songs in your library.
       <a href="/settings/library/delete">
         <button title="delete all" class="trash-button"><img
@@ -12,7 +12,7 @@
           /></button>
       </a>
     </h3>
-    <table>
+    <table class='lib-table'>
       <thead>
         <tr>
           <th>Artwork</th>
@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         {{#each tracklist}}
-          <tr>
+          <tr class="track-row">
             <td>
               {{#if trackId.img}}
                 <img
@@ -48,7 +48,8 @@
             <td>{{trackId.album}}</td>
             <td>{{trackId.year}}</td>
             <td></td>
-            <td><button class="trash-button"><img
+            <td><button data-id="{{this._id}}" class="trash-button"><img
+                  data-id="{{this._id}}"
                   src="../images/trash.png"
                   alt="remove"
                 /></button></td>
@@ -62,3 +63,5 @@
   {{/if}}
 
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.js" integrity="sha512-MNW6IbpNuZZ2VH9ngFhzh6cUt8L/0rSVa60F8L22K1H72ro4Ki3M/816eSDLnhICu7vwH/+/yb8oB3BtBLhMsA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../js/library.js"></script>

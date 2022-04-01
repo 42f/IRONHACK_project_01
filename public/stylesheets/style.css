@@ -109,3 +109,7 @@ form#delete-form{
   color: black;
   text-decoration: none;
 }
+
+.lib-table {
+  width: 100%;
+}
