@@ -50,7 +50,9 @@ section.all-groups div.container .column .table {
 section.all-groups div.container .column .table thead tr:first-of-type() {
   background-color: #212529;
 }
-section.all-groups div.container .column .table thead tr th, section.all-groups div.container .column .table thead tr tr, section.all-groups div.container .column .table thead tr td {
+section.all-groups div.container .column .table thead tr th,
+section.all-groups div.container .column .table thead tr tr,
+section.all-groups div.container .column .table thead tr td {
   text-align: center;
 }
 section.all-groups div.container .column .table thead th {
@@ -60,11 +62,23 @@ section.all-groups div.container .column .table tbody {
   height: 70vh;
   overflow-y: scroll;
 }
-section.all-groups div.container .column .table tbody th, section.all-groups div.container .column .table tbody tr, section.all-groups div.container .column .table tbody td {
+section.all-groups div.container .column .table tbody th,
+section.all-groups div.container .column .table tbody tr,
+section.all-groups div.container .column .table tbody td {
   text-align: center;
 }
 section.all-groups div.container .column .table#myGroups img {
   width: 100%;
+}
+section.all-groups div.container .column .right {
+  margin-left: 2em;
+}
+section.all-groups div.container .vertical-gradient-all-groups {
+  border-left: 0.4em solid black;
+  border-image: linear-gradient(139deg, #5b62f4, #d63384) 3;
+  height: 70vh;
+  position: absolute;
+  left: 50%;
 }
 
 section.section {
