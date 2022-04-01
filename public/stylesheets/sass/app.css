@@ -6,6 +6,17 @@
   padding: 0 2vw;
 }
 
+nav.navbar {
+  width: 100%;
+}
+nav.navbar:hover {
+  background: #f0f5fa;
+}
+nav.navbar a:hover {
+  background: #7b8ab8;
+  color: white;
+}
+
 section.all-groups {
   display: flex;
   flex-direction: column;
@@ -39,16 +50,21 @@ section.all-groups div.container .column .table {
 section.all-groups div.container .column .table thead tr:first-of-type() {
   background-color: #212529;
 }
-section.all-groups div.container .column .table thead tr th {
+section.all-groups div.container .column .table thead tr th, section.all-groups div.container .column .table thead tr tr, section.all-groups div.container .column .table thead tr td {
   text-align: center;
+}
+section.all-groups div.container .column .table thead th {
+  width: 33.3333333333%;
 }
 section.all-groups div.container .column .table tbody {
   height: 70vh;
   overflow-y: scroll;
 }
-section.all-groups div.container .column .table tbody tr {
-  min-height: 5em;
-  max-height: 7em;
+section.all-groups div.container .column .table tbody th, section.all-groups div.container .column .table tbody tr, section.all-groups div.container .column .table tbody td {
+  text-align: center;
+}
+section.all-groups div.container .column .table#myGroups img {
+  width: 100%;
 }
 
 section.section {
@@ -113,6 +129,9 @@ section.section div.main div.column-container {
 section.section div.main div.column-container div.left {
   flex: 1;
   overflow-x: scroll;
+  border-right: 3px solid black;
+  border-image: linear-gradient(139deg, #5b62f4, #d63384) 3;
+  margin-right: 1em;
 }
 section.section div.main div.column-container div.right {
   overflow-x: scroll;
@@ -128,12 +147,6 @@ section.section div.main div.column-container div.right .playlist {
 section.section div.main div.column-container div.right .playlist table tbody img {
   height: 3em;
   width: auto;
-}
-section.section .vertical {
-  border-left: 6px solid black;
-  height: 200px;
-  position: absolute;
-  left: 50%;
 }
 
 /*# sourceMappingURL=app.css.map */
