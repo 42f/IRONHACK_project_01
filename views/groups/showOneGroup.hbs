@@ -1,32 +1,59 @@
 <section class="section">
   <div class="container main">
-    <div class="group-infos group-header container row">
+    <div class="group-infos group-header container row container-fluid">
 
       <div class="group-stats container">
         <div class="title">
+          {{#if group.name}}
             <h1>{{group.name}}</h1>
+          {{else}}
+            <h1>Your Group</h1>
+          {{/if}}
         </div>
         <div class="stats">
-          <p>{{groupLen}} members</p>
-          <p>Match songs: {{match}}</p>
+          <p>{{groupLen}} members in this group</p>
+          <p>Track Match: {{match}}</p>
         </div>
-      </div> <!-- Group stats -->
+      </div>
+      <!-- Group stats -->
 
       <div class="group-controls">
-          <div class="buttons">
-            <a href="{{group._id}}/edit" class="btn">EDIT GROUP</a>
-            <a href="{{group._id}}/delete" class="btn">DELETE GROUP</a>
-            <!-- Pop, are you sure ?-->
+        <div class="buttons">
+          <a href="{{group._id}}/delete" class="btn">DELETE GROUP</a>
+          {{!-- <a href="{{group._id}}/edit" class="btn">EDIT GROUP</a> --}}
+          <a href="/settings/export/{{group._id}}" class="btn">EXPORT PLAYLIST
+          </a>
+          <p>
+            <b>{{tracklist.length}}</b>
+            common tracks.
+          </p>
+          <!-- Pop, are you sure ?-->
         </div>
-      </div> <!-- group controls edit delete -->
+        <div class="container playlist-controls">
+          {{!-- <a href="/settings/export/{{group._id}}">
+            <button class="btn">EXPORT PLAYLIST</button>
+          </a>
+          <p>
+            <b>{{tracklist.length}}</b>
+            common tracks.
+          </p> --}}
+        </div>
+      </div>
+      <!-- group controls edit delete -->
 
-    </div> <!-- group header container -->
+    </div>
+    <!-- group header container -->
 
     <div class="column-container row">
 
-      <div class="group-details left column"> <!-- Start left column -->
+      <div class="group-details left column">
+        <!-- Start left column -->
 
         <div class="participants list">
+          <p>
+            <b>{{groupLen}}</b>
+            users
+          </p>
           <table class="table table-hover">
             <tbody>
               {{#each group.participants}}
@@ -39,24 +66,23 @@
                       />
                     </picture>
                   </td>
-                  <td>{{userName}}</td>
+                  <td>{{username}}</td>
                   <td>{{match}}</td>
                 </tr>
               {{/each}}
             </tbody>
           </table>
         </div>
-      </div> <!-- LEFT COLUMN -->
+      </div>
+      <!-- LEFT COLUMN -->
+
+      {{! <div class = "vertical"></div> }}
 
       <div class="right container group-playlist">
 
         <div class="playlist">
           {{#if tracklist}}
-            <h3>
-              You have
-              <b></b>
-              songs in your library.
-            </h3>
+
             <table>
               <thead>
                 <tr>
@@ -93,10 +119,10 @@
                     <td>{{this.album}}</td>
                     <td>{{this.year}}</td>
                     <td></td>
-                    <td><button class="trash-button"><img
+                    {{! <td><button class="trash-button"><img
                           src="../images/trash.png"
                           alt="remove"
-                        /></button></td>
+                        /></button></td> }}
                   </tr>
                 {{/each}}
               </tbody>
@@ -106,15 +132,13 @@
               <a href="/settings/import">importing some...</a></p>
           {{/if}}
 
-        </div> <!-- container playlist -->
-        <div class="container playlist-controls">
-          <a href="/settings/export/{{group._id}}">
-          <button class="btn">EXPORT PLAYLIST</button>
-          </a>
         </div>
+        <!-- container playlist -->
 
-      </div> <!-- END RIGHT COLUMN CONTAINER -->
+      </div>
+      <!-- END RIGHT COLUMN CONTAINER -->
     </div>
 
-  </div> <!-- container -->
+  </div>
+  <!-- container -->
 </section>

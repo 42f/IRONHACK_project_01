@@ -1,19 +1,101 @@
-section.section{
-    // border: 1px solid black;
-    // height: 80vh;
-    div.main{
+section.section {
+  // border: 1px solid black;
+  // overflow-y: scroll;
+  
+  padding-top: 4em;
+  div.main {
+    // border: 2px solid blue;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    & > * {
+      flex: 1;
+    }
+    .group-header {
+      // border: 2px solid pink;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-bottom: 4em;
+      height: max-content;
+      p{
+        text-align: center;
+    }
+    }
+    .group-stats {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 10%;
+    }
+    .group-controls {
+       
+      margin-top: 2em;
+      width: 50%;
+      height: max-content;
+      .buttons {
+         
+        a:first-of-type {
+          width: 40%;
+          margin: 1.3em auto;
+        }
+        a:nth-of-type(2) {
+          width: 50%;
+          margin: auto;
+          margin-bottom: 1em;
+        }
+        a:last-of-type {
+          width: 80%;
+          margin: auto;
+        }
+        p {
+            padding-top: 0.5em;
+            text-align: center;
+        }
+      }
+    }
+    div.column-container {
+      // border: 2px solid pink;
+      margin-top: 3em;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      height: 70vh;
+      div.left {
+        // border: 2px solid green;
+        flex: 1;
+        overflow-x: scroll;
+      }
+      div.right {
+        // border: 2px solid rgb(94, 0, 128);
+        overflow-x: scroll;
+        height: 70vh;
         display: flex;
         flex-direction: column;
-        width: 100%;
-        .row{
-            border: 2px solid pink;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            .group-stats{
-                display: flex;
-                flex-direction: row;
+
+        flex: 2;
+        .playlist {
+          text-align: center;
+          height: fit-content;
+          table {
+            tbody {
+              img {
+                height: 3em;
+                width: auto;
+              }
             }
+          }
         }
+      }
     }
+  }
+  .vertical {
+    border-left: 6px solid black;
+    height: 200px;
+    position: absolute;
+    left: 50%;
+  }
 }

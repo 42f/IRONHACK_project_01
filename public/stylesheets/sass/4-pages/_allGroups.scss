@@ -1,5 +1,19 @@
 section.all-groups {
   // border: 2px solid blueviolet;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  div.groups-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    * {
+      text-align: center;
+      margin: auto;
+    }
+    margin-bottom: 2em;
+  }
   div.container {
     display: flex;
     flex-direction: row;
@@ -12,8 +26,8 @@ section.all-groups {
       height: 70vh;
       overflow-y:scroll;
       .table {
+        // border: 1px solid green;
           max-height: 70vh;
-          border: 1px solid green;
         thead {
           // display: flex;
           // flex-direction: column;

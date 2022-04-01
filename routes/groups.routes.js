@@ -52,6 +52,7 @@ router.get("/", async (req, res, next) => {
     users: allUsers,
     myOwnGroups,
     myOtherGroups,
+    allMyGroups
   });
 });
 
@@ -103,7 +104,7 @@ router.get("/:id", async (req, res, next) => {
       // await group.getGroupMatch();
       // const match = await group.getGroupMatch();
 
-      const groupLen = (group.participants.length + 1);
+      const groupLen = (group.participants.length );
       res.render("./groups/showOneGroup", {
         group,
         groupLen,
@@ -124,20 +125,19 @@ router.get("/:id/edit", async (req, res, next) => {
   const group = await Group.findById(req.params.id).populate(
     "owner participants"
   );
-
   // 5. Set allUsers checked status and getMatchUserWithGroup
-  for (let i = 0; i < allUsers.length; i++) {
-    const targetUser = allUsers[i];
-    targetUser["matchGroup"] = await group.getMatchUserWithGroup(targetUser);
-    targetUser["matchGroup"]["pourcentage"] = (
-      (targetUser["matchGroup"]["numOfMatches"] /
-        targetUser["matchGroup"]["numOfGroupTracks"]) *
-      100
-    ).toFixed(0);
-    // console.log(("USER WITH GROUP MATCH:", targetUser['matchGroup']));
+  // for (let i = 0; i < allUsers.length; i++) {
+  //   const targetUser = allUsers[i];
+  //   targetUser["matchGroup"] = await group.getMatchUserWithGroup(targetUser);
+  //   targetUser["matchGroup"]["pourcentage"] = (
+  //     (targetUser["matchGroup"]["numOfMatches"] /
+  //       targetUser["matchGroup"]["numOfGroupTracks"]) *
+  //     100
+  //   ).toFixed(0);
+  //   // console.log(("USER WITH GROUP MATCH:", targetUser['matchGroup']));
 
-    targetUser["isChecked"] = await group.getUsersWithCheckedStatus(targetUser);
-  }
+  //   targetUser["isChecked"] = await group.getUsersWithCheckedStatus(targetUser);
+  // }
   // allUsers.forEach((user) => {
   //   console.log(user.userName, user["isChecked"]);
   // });
@@ -151,7 +151,20 @@ router.post("/:id/edit", (req, res, next) => {
   // res.redirect("/:id");
 });
 
-router.post("/:id/delete", (req, res, next) => {
+router.get("/:id/delete", async(req, res, next) => {
+
+  const groupId = req.params.id
+  try{
+
+    const deleteGroup = await Group.deleteOne({_id: req.params.id})
+
+  }catch(err){
+
+    console.err(err)
+    res.redirect(`/groups/${groupId}`)
+
+  }
+  // res.send('ok delete');
   res.redirect("/groups");
 });
 

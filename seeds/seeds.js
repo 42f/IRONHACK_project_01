@@ -22,18 +22,18 @@ mongoose
 
 // Users to insert in  DB
 const starterUsers = [
-  {
-    email: "valette.brian@gmail.com",
-    username: 'brian',
-    avatarUrl: `https://avatars.dicebear.com/api/adventurer/brian.svg`,
-    password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
-  },
-  {
-    email: "gary.j@live.fr",
-    username: 'gary',
-    avatarUrl: `https://avatars.dicebear.com/api/adventurer/gary.svg`,
-    password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
-  },
+  // {
+  //   email: "valette.brian@gmail.com",
+  //   username: 'brian',
+  //   avatarUrl: `https://avatars.dicebear.com/api/adventurer/brian.svg`,
+  //   password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
+  // },
+  // {
+  //   email: "gary.j@live.fr",
+  //   username: 'gary',
+  //   avatarUrl: `https://avatars.dicebear.com/api/adventurer/gary.svg`,
+  //   password: "$2b$10$wN27fSja8gOfp.OFfULH9./pUZ0sYjtd2RX10CHT230WbDLo0RfV2",
+  // },
 ];
 
 // Create fake users
@@ -171,19 +171,19 @@ function generateAllGroups(quantity, userDb) {
 // The script that will be run to actually seed the database (feel free to refer to the previous lesson)
 async function seedDB() {
   try {
-    await User.deleteMany();
-    await Track.deleteMany();
-    await Link.deleteMany();
-    await Group.deleteMany();
+    // await User.deleteMany();
+    // await Track.deleteMany();
+    // await Link.deleteMany();
+    // await Group.deleteMany();
     // Populate track array with random tracks
-    const tracks = generateFakeTracks(2000);
+    // const tracks = generateFakeTracks(2000);
     // Populate users array with random users
     const users = generateFakeUsers(20);
 
     const usersDB = await User.create(users);
-    const tracksDB = await Track.create(tracks);
+    // const tracksDB = await Track.create(tracks);
     // Populate links array and save it to db
-    await fakeLinks(700, usersDB, tracksDB);
+    // await fakeLinks(700, usersDB, tracksDB);
     const groups = generateAllGroups(10, usersDB);
     await Group.create(groups);
 

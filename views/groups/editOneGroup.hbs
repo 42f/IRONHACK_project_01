@@ -38,11 +38,13 @@
       </div>
     </form>
   </div>
+  <!--PARTI DROITE RIGHT COLUMN-->
   <div class="right users-list">
-    <fieldset id="users-list">
+    <fieldset 
+    {{!-- id="users-list"> --}}
       <legend class="mt-4">Add / Remove Users To Group</legend>
       {{#each users}}
-        <div class="form-check form-switch row-user" data-userID="{{_id}}">
+        <div class="form-check form-switch row-user" data-userid="{{_id}}">
           <input
             form="create-group"
             class="form-check-input"
@@ -50,11 +52,12 @@
             name="participants"
             value="{{_id}}"
             id="{{_id}}"
+            data-userid="{{_id}}"
             {{#if this.isChecked}}
             checked="true"
             {{/if}}
           />
-          <label class="form-check-label user-row" for="{{_id}}">
+          <label class="form-check-label" for="{{_id}}">
             <div class="user">
               <div class="username">{{username}}</div>
               <img
@@ -74,3 +77,4 @@
   </div>
 
 </div>
+<script src="/js/form-add-remove-user.js"> </script>

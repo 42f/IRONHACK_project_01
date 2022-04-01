@@ -15,11 +15,6 @@ li {
   list-style: none;
 }
 
-.container {
-  /* border: solid blue 2px; */
-  height: 70vh;
-}
-
 .trash-button {
   background-color: #fafafa;
   border: 1px solid #ccc;
@@ -50,7 +45,7 @@ li {
 img.avatar{
   width: 100px;
 }
-/* div.form-check{
+div.form-check{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -89,7 +84,7 @@ form#delete-form{
   width: 100%;
   display: flex;
   justify-content: center;
-} */
+}
 
 /* -------------- SETTINGS PAGE -------------- */
 

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .wrap-resp {
   max-width: 1280px;
   width: 100%;
@@ -5,6 +6,22 @@
   padding: 0 2vw;
 }
 
+section.all-groups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+section.all-groups div.groups-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2em;
+}
+section.all-groups div.groups-header *   {
+  text-align: center;
+  margin: auto;
+}
 section.all-groups div.container {
   display: flex;
   flex-direction: row;
@@ -18,7 +35,6 @@ section.all-groups div.container .column {
 }
 section.all-groups div.container .column .table {
   max-height: 70vh;
-  border: 1px solid green;
 }
 section.all-groups div.container .column .table thead tr:first-of-type() {
   background-color: #212529;
@@ -35,20 +51,89 @@ section.all-groups div.container .column .table tbody tr {
   max-height: 7em;
 }
 
+section.section {
+  padding-top: 4em;
+}
 section.section div.main {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
 }
-section.section div.main .row {
-  border: 2px solid pink;
+section.section div.main > * {
+  flex: 1;
+}
+section.section div.main .group-header {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-bottom: 4em;
+  height: max-content;
 }
-section.section div.main .row .group-stats {
+section.section div.main .group-header p {
+  text-align: center;
+}
+section.section div.main .group-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 10%;
+}
+section.section div.main .group-controls {
+  margin-top: 2em;
+  width: 50%;
+  height: max-content;
+}
+section.section div.main .group-controls .buttons a:first-of-type {
+  width: 40%;
+  margin: 1.3em auto;
+}
+section.section div.main .group-controls .buttons a:nth-of-type(2) {
+  width: 50%;
+  margin: auto;
+  margin-bottom: 1em;
+}
+section.section div.main .group-controls .buttons a:last-of-type {
+  width: 80%;
+  margin: auto;
+}
+section.section div.main .group-controls .buttons p {
+  padding-top: 0.5em;
+  text-align: center;
+}
+section.section div.main div.column-container {
+  margin-top: 3em;
+  width: 100%;
   display: flex;
   flex-direction: row;
+  height: 70vh;
+}
+section.section div.main div.column-container div.left {
+  flex: 1;
+  overflow-x: scroll;
+}
+section.section div.main div.column-container div.right {
+  overflow-x: scroll;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+}
+section.section div.main div.column-container div.right .playlist {
+  text-align: center;
+  height: fit-content;
+}
+section.section div.main div.column-container div.right .playlist table tbody img {
+  height: 3em;
+  width: auto;
+}
+section.section .vertical {
+  border-left: 6px solid black;
+  height: 200px;
+  position: absolute;
+  left: 50%;
 }
 
 /*# sourceMappingURL=app.css.map */
